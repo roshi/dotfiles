@@ -22,6 +22,7 @@ NeoBundle 'Shougo/vimproc.vim', {
 NeoBundle 'Shougo/neomru.vim'
 NeoBundle 'thinca/vim-quickrun'
 NeoBundle 'rking/ag.vim'
+NeoBundle 'AndrewRadev/linediff.vim'
 
 call neobundle#end()
 
@@ -123,3 +124,9 @@ au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>:q<CR>
 if $GOROOT != ''
   set runtimepath+=$GOROOT/misc/vim
 endif
+
+" matchit
+source $VIMRUNTIME/macros/matchit.vim
+
+" editexisting
+source $VIMRUNTIME/macros/editexisting.vim
