@@ -42,6 +42,7 @@ set backspace=indent,eol,start
 set formatoptions=lmoq
 set clipboard=unnamed,autoselect
 set virtualedit=block
+inoremap ¥ \
 
 " indent
 set tabstop=4 shiftwidth=4 softtabstop=0
