@@ -1,33 +1,44 @@
-if has('vim_starting')
+if &compatible
   set nocompatible
-  set runtimepath+=~/.vim/bundle/neobundle.vim/
 endif
 
-" Required
-call neobundle#begin(expand('~/.vim/bundle/'))
+let s:dein_dir=expand('~/.cache/dein')
+let s:dein_vim_dir=s:dein_dir . '/repos/github.com/Shougo/dein.vim'
+let s:vim_tmp_dir=expand('~/.cache/vim')
 
-" Let NeoBundle manage NeoBundle
-NeoBundleFetch 'Shougo/neobundle.vim'
+if &runtimepath !~# '/dein.vim'
+  if !isdirectory(s:vim_tmp_dir)
+    call mkdir(s:vim_tmp_dir, 'p')
+  endif
+  if !isdirectory(s:dein_vim_dir)
+    execute '!git clone https://github.com/Shougo/dein.vim' s:dein_vim_dir
+  endif
+  execute 'set runtimepath^=' . s:dein_vim_dir
+endif
 
-" My Bundles here
-NeoBundle 'Shougo/unite.vim'
-NeoBundle 'Shougo/vimproc.vim', {
-\   'build': {
-\     'windows': 'tools\\update-dll-mingw', 
-\     'cygwin': 'make -f make_cygwin.mak', 
-\     'mac': 'make -f make_mac.mak', 
-\     'unix': 'make -f make_unix.mak', 
-\   }, 
-\ }
-NeoBundle 'Shougo/neomru.vim'
-NeoBundle 'thinca/vim-quickrun'
-NeoBundle 'rking/ag.vim'
-NeoBundle 'AndrewRadev/linediff.vim'
+if dein#load_state(s:dein_dir)
+  call dein#begin(s:dein_dir)
 
-call neobundle#end()
+  call dein#add(s:dein_vim_dir)
+  call dein#add('Shougo/unite.vim')
+  call dein#add('Shougo/neomru.vim')
+  call dein#add('dracula/vim', {'merged': 0})
+  call dein#source('dracula')
+  call dein#add('itchyny/lightline.vim')
+  call dein#add('thinca/vim-quickrun')
+  call dein#add('AndrewRadev/linediff.vim')
+  call dein#add('jremmen/vim-ripgrep')
+
+  call dein#end()
+  call dein#save_state()
+endif
 
 filetype plugin indent on
-NeoBundleCheck
+syntax enable
+
+if dein#check_install()
+  call dein#install()
+endif
 
 
 " file
@@ -35,7 +46,6 @@ set autoread
 set hidden
 set noswapfile
 set nobackup
-syntax on
 
 " input
 set backspace=indent,eol,start
@@ -77,9 +87,9 @@ set laststatus=2
 set statusline=%f%m%=[%l:%c][0x%02B]%y[%{&fileencoding}][%{&fileformat}]
 
 " backup
-set directory=~/.vim/tmp
-set backupdir=~/.vim/tmp
-set undodir=~/.vim/tmp
+let &directory=s:vim_tmp_dir
+let &backupdir=s:vim_tmp_dir
+let &undodir=s:vim_tmp_dir
 
 " encoding
 set termencoding=utf-8
@@ -87,27 +97,19 @@ set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=utf-8,cp932
 
-" quickrun
-let g:quickrun_config = {}
-let g:quickrun_config._ = {'split': 'below'}
+" dracula
+let g:dracula_italic=0
+colorscheme dracula
 
-" ag
-let g:agprg="/usr/local/bin/ag -i --column"
+" quickrun
+let g:quickrun_config={}
+let g:quickrun_config._={'split': 'below'}
 
 " unite
 let g:unite_enable_start_insert=1
 let g:unite_source_history_yank_enable=1
-let g:unite_enable_ignore_case = 1
-let g:unite_enable_smart_case = 1
-
-if executable('ag')
-  let g:unite_source_grep_command = 'ag'
-  let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
-  let g:unite_source_grep_recursive_opt = ''
-  let g:unite_source_rec_async_command = 'ag --nogroup --nocolor --column --follow --hidden -g ""'
-endif
-
-" call unite#custom#source('file_rec/async', 'ignore_pattern', '(png\|gif\|jpeg\|jpg)$')
+let g:unite_enable_ignore_case=1
+let g:unite_enable_smart_case=1
 
 nnoremap [unite] <Nop>
 nmap <Space> [unite]
@@ -121,13 +123,11 @@ nnoremap <silent> [unite]g :<C-u>Unite file_rec/git:!<CR>
 au FileType unite nnoremap <silent> <buffer> <ESC><ESC> :q<CR>
 au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>:q<CR>
 
-" golang
-if $GOROOT != ''
-  set runtimepath+=$GOROOT/misc/vim
+" neomru
+if has('win32unix')
+  let g:neomru#file_mru_ignore_pattern='^/'
+  let g:neomru#directory_mru_ignore_pattern='^/'
 endif
 
 " matchit
 source $VIMRUNTIME/macros/matchit.vim
-
-" editexisting
-source $VIMRUNTIME/macros/editexisting.vim
