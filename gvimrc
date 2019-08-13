@@ -1,9 +1,12 @@
 source ~/.vimrc
 
 " gvim
-set lines=60 columns=140
+set lines=55 columns=150
 set guioptions-=T
 set guioptions-=m
 set title
 hi CursorLine gui=underline guibg=NONE
 map ¥ <leader>
+
+" editexisting
+source $VIMRUNTIME/macros/editexisting.vim
