@@ -1,8 +1,8 @@
 " cd /path/to/vim/vim*/autoload
 " curl -fLo plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-" mkdir ~/.cache/plugged ~/.cache/vim
+" mkdir ~/.vim/plugged ~/.vim/tmp
 
-call plug#begin('~/.cache/plugged')
+call plug#begin('~/.vim/plugged')
 
 Plug 'thinca/vim-quickrun'
 Plug 'jremmen/vim-ripgrep'
@@ -31,9 +31,9 @@ call plug#end()
 
 
 " backup
-set directory=~/.cache/vim
-set backupdir=~/.cache/vim
-set undodir=~/.cache/vim
+set directory=~/.vim/tmp
+set backupdir=~/.vim/tmp
+set undodir=~/.vim/tmp
 
 " filetype
 au FileType sql set softtabstop=2 | set shiftwidth=2 | set expandtab
@@ -104,13 +104,30 @@ set fileencodings=utf-8,cp932
 
 " quickrun
 let g:quickrun_config = {}
-let g:quickrun_config._ = {'split': 'below'}
+let g:quickrun_config._ = {'outputter': 'multi:buffer:variable', 'outputter/buffer/split': 'below', 'outputter/variable/name': '\@p'}
 nnoremap <silent> <Leader>R :<C-u>QuickRun sh<CR>
 vnoremap <silent> <Leader>R :<C-u>'<,'>QuickRun sh<CR>
 
 " dbext
 let g:dbext_default_display_cmd_line = 0
 let g:dbext_default_MYSQL_cmd_options = '--default-character-set=utf8mb4'
+function! DBextPostResult(db_type, buf_nr)
+  execute 'normal ggVG"py'
+endfunction
+function! DBextMysqlDDL(...)
+  if (a:0 > 0)
+    let table_name = s:DB_getObjectAndQuote(a:1)
+  else
+    let table_name = expand("<cword>")
+  endif
+  if table_name == ""
+    call s:DB_warningMsg( 'dbext:You must supply a table name' )
+    return ""
+  endif
+
+  return dbext#DB_execSql('show create table `' . table_name . '`')
+endfunction
+nnoremap <unique> <Leader>sds :call DBextMysqlDDL()<CR>
 
 " vim-table-mode
 let g:table_mode_corner_corner = '+'
@@ -130,7 +147,7 @@ let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_switch_buffer = 'et'
 let g:ctrlp_user_command = 'rg --files --color=never %s'
 let g:ctrlp_match_window = 'bottom,btt,min:1,max:10,results:100'
-let g:ctrlp_mruf_exclude = '^\/'
+" let g:ctrlp_mruf_exclude = '^\/'
 let g:ctrlp_prompt_mappings = { 'PrtInsert()': ['<c-\>', '<c-^>'] }
 nnoremap [ctrlp] <Nop>
 nmap <space> [ctrlp]
@@ -170,8 +187,8 @@ if has('gui_running') && executable('gopls')
 endif
 
 " java
-" let s:lombok_path = expand('~/.cache/jdtls/lombok.jar')
-" let s:jdtls_launcher = expand('~/.cache/jdtls/plugins/org.eclipse.equinox.launcher_1.5.700.v20200207-2156.jar')
+" let s:lombok_path = expand('~/.vim/jdtls/lombok.jar')
+" let s:jdtls_launcher = expand('~/.vim/jdtls/plugins/org.eclipse.equinox.launcher_1.5.700.v20200207-2156.jar')
 " if has('gui_running') && executable('java') && filereadable(s:jdtls_launcher)
 "   autocmd User lsp_setup call lsp#register_server({
 "     \ 'name': 'eclipse.jdt.ls',
