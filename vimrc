@@ -104,16 +104,14 @@ set fileencodings=utf-8,cp932
 
 " quickrun
 let g:quickrun_config = {}
-let g:quickrun_config._ = {'outputter': 'multi:buffer:variable', 'outputter/buffer/split': 'below', 'outputter/variable/name': '\@p'}
+let g:quickrun_config._ = {'outputter/buffer/split': 'below'}
 nnoremap <silent> <Leader>R :<C-u>QuickRun sh<CR>
 vnoremap <silent> <Leader>R :<C-u>'<,'>QuickRun sh<CR>
 
 " dbext
 let g:dbext_default_display_cmd_line = 0
+let g:dbext_default_prompt_for_parameters = 0
 let g:dbext_default_MYSQL_cmd_options = '--default-character-set=utf8mb4'
-function! DBextPostResult(db_type, buf_nr)
-  execute 'normal ggVG"py'
-endfunction
 function! DBextMysqlDDL(...)
   if (a:0 > 0)
     let table_name = s:DB_getObjectAndQuote(a:1)
@@ -121,7 +119,7 @@ function! DBextMysqlDDL(...)
     let table_name = expand("<cword>")
   endif
   if table_name == ""
-    call s:DB_warningMsg( 'dbext:You must supply a table name' )
+    call s:DB_warningMsg('dbext:You must supply a table name')
     return ""
   endif
 
@@ -148,34 +146,40 @@ let g:ctrlp_switch_buffer = 'et'
 let g:ctrlp_user_command = 'rg --files --color=never %s'
 let g:ctrlp_match_window = 'bottom,btt,min:1,max:10,results:100'
 " let g:ctrlp_mruf_exclude = '^\/'
-let g:ctrlp_prompt_mappings = { 'PrtInsert()': ['<c-\>', '<c-^>'] }
+let g:ctrlp_prompt_mappings = { 'PrtInsert()': ['<c-\>', '<c-q>'] }
 nnoremap [ctrlp] <Nop>
 nmap <space> [ctrlp]
-nnoremap <silent> [ctrlp]f :CtrlPCurWD<CR>
+nnoremap <silent> [ctrlp]f :CtrlPCurFile<CR>
+nnoremap <silent> [ctrlp]w :CtrlPCurWD<CR>
 nnoremap <silent> [ctrlp]g :CtrlPRoot<CR>
 nnoremap <silent> [ctrlp]m :CtrlPMRU<CR>
 nnoremap <silent> [ctrlp]b :CtrlPBuffer<CR>
-
-" lsp
-let g:lsp_preview_float = 1
-let lsp_signature_help_enabled = 0
-" let g:lsp_diagnostics_enabled = 0
-" let g:lsp_log_verbose = 1
-" let g:lsp_log_file = expand('~/vim-lsp.log')
-function! s:configure_lsp() abort
-  setlocal omnifunc=lsp#complete
-  nnoremap <buffer> <C-]> :<C-u>LspDefinition<CR>
-  nnoremap <buffer> gd :<C-u>LspPeekDefinition<CR>
-  nnoremap <buffer> gr :<C-u>LspReferences<CR>
-  nnoremap <buffer> K :<C-u>LspHover<CR>
-endfunction
 
 " asyncomplete
 let g:asyncomplete_remove_duplicates = 1
 let g:asyncomplete_smart_completion = 1
 let g:asyncomplete_auto_popup = 1
 
-" golang
+" lsp
+let g:lsp_preview_float = 1
+let g:lsp_signature_help_enabled = 0
+" let g:lsp_diagnostics_enabled = 0
+" let g:lsp_log_verbose = 1
+" let g:lsp_log_file = expand('~/.vim/vim-lsp.log')
+function! s:on_lsp_buffer_enabled() abort
+  setlocal omnifunc=lsp#complete
+  nnoremap <buffer> <C-]> :<C-u>LspDefinition<CR>
+  nnoremap <buffer> gd :<C-u>LspPeekDefinition<CR>
+  nnoremap <buffer> gr :<C-u>LspReferences<CR>
+  nnoremap <buffer> gs :<C-u>LspDocumentSymbol<CR>
+  nnoremap <buffer> K :<C-u>LspHover<CR>
+endfunction
+augroup lsp_install
+  au!
+  autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+
+" lsp:golang
 if has('gui_running') && executable('gopls')
   autocmd User lsp_setup call lsp#register_server({
     \ 'name': 'gopls',
@@ -183,10 +187,10 @@ if has('gui_running') && executable('gopls')
     \ 'whitelist': ['go'],
     \ })
   autocmd BufWritePre *.go LspDocumentFormatSync
-  autocmd FileType go call s:configure_lsp()
 endif
 
-" java
+" lsp:java
+" https://github.com/prabirshrestha/vim-lsp/wiki/Servers-Java
 " let s:lombok_path = expand('~/.vim/jdtls/lombok.jar')
 " let s:jdtls_launcher = expand('~/.vim/jdtls/plugins/org.eclipse.equinox.launcher_1.5.700.v20200207-2156.jar')
 " if has('gui_running') && executable('java') && filereadable(s:jdtls_launcher)
@@ -206,16 +210,16 @@ endif
 "     \    '-jar',
 "     \    s:jdtls_launcher,
 "     \    '-configuration',
-"     \    expand('~/.vim/jdtls/config_win'),
+"     \    expand('~/.vim/jdtls/config_' . (has('mac') ? 'mac' : 'win')),
 "     \    '-data',
-"     \    expand('~/.vim/jdtls/workspace')
+"     \    expand('~/.vim/jdtls')
 "     \ ]},
+"     \ 'root_uri': {server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_directory(lsp#utils#get_buffer_path(), '.git/'))},
 "     \ 'whitelist': ['java'],
 "     \ })
 " endif
-    " \ 'root_uri': {server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), '.git/..'))},
 
-" python
+" lsp:python
 if has('gui_running') && executable('pyls')
   augroup pylsp
     autocmd User lsp_setup call lsp#register_server({
@@ -226,7 +230,6 @@ if has('gui_running') && executable('pyls')
       \   'pycodestyle': { 'enabled': v:false },
       \   'jedi_definition': { 'follow_imports': v:true, 'follow_builtin_imports': v:true }, }}}
       \ })
-    autocmd FileType python call s:configure_lsp()
   augroup END
 endif
 

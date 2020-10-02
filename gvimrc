@@ -1,5 +1,3 @@
-source ~/.vimrc
-
 set iminsert=0
 
 if has('mac')
