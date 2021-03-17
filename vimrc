@@ -8,11 +8,11 @@ Plug 'thinca/vim-quickrun'
 Plug 'jremmen/vim-ripgrep'
 Plug 'AndrewRadev/linediff.vim'
 Plug 'itchyny/lightline.vim'
-" Plug 'derekwyatt/vim-scala'
 Plug 'dracula/vim'
 Plug 'vim-scripts/dbext.vim'
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'tpope/vim-fugitive'
+" Plug 'tpope/vim-dadbod'
 " Plug 'w0rp/ale'
 " Plug 'tpope/vim-surround'
 " Plug 'andymass/vim-matchup'
@@ -22,8 +22,8 @@ if has('gui_running')
   Plug 'prabirshrestha/asyncomplete.vim'
   Plug 'prabirshrestha/asyncomplete-lsp.vim'
   Plug 'prabirshrestha/vim-lsp'
-  " Plug 'SirVer/ultisnips'
-  " Plug 'honza/vim-snippets'
+  Plug 'hrsh7th/vim-vsnip'
+  Plug 'hrsh7th/vim-vsnip-integ'
 endif
 source $VIMRUNTIME/macros/matchit.vim
 
@@ -102,6 +102,10 @@ set fileencodings=utf-8,cp932
 " let g:ale_fixers = {'php': ['prettier']}
 " let g:ale_java_google_java_format_options = '--aosp'
 
+" tab
+" nnoremap <C-H> :tabprevious<CR>
+" nnoremap <C-L> :tabnext<CR>
+
 " quickrun
 let g:quickrun_config = {}
 let g:quickrun_config._ = {'outputter/buffer/split': 'below'}
@@ -133,7 +137,7 @@ vnoremap <silent> <Leader>tu :<C-u>'<,'>!perl -lne "@F = split(/ *\x7c */); prin
 
 " status
 set laststatus=2
-let g:lightline = { 'active': { 'right': [ ['lineinfo'], ['connection'], ['fileformat', 'fileencoding', 'filetype', 'charvaluehex'] ] }, 'component': { 'charvaluehex': '0x%02B' } }
+let g:lightline = { 'active': { 'right': [ ['lineinfo'], ['connection'], ['fileformat', 'fileencoding', 'filetype'] ] } }
 let g:lightline.component_function = { 'connection': 'LightlineConnection' }
 function! LightlineConnection()
   return exists(':DB_listOption') ? DB_listOption('profile') : (100 * line('.') / line('$')) . '%'
@@ -232,6 +236,32 @@ if has('gui_running') && executable('pyls')
       \ })
   augroup END
 endif
+
+" vsnip
+" if has('gui_running')
+"   let g:completion_enable_snippet = 'vim-vsnip'
+"   let g:vsnip_extra_mapping = v:true
+" 
+"   imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
+"   smap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
+"   
+"   imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+"   smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+"   
+"   imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+"   smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+"   imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+"   smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+"   
+"   nmap        s   <Plug>(vsnip-select-text)
+"   xmap        s   <Plug>(vsnip-select-text)
+"   nmap        S   <Plug>(vsnip-cut-text)
+"   xmap        S   <Plug>(vsnip-cut-text)
+"   
+"   let g:vsnip_filetypes = {}
+"   let g:vsnip_filetypes.javascriptreact = ['javascript']
+"   let g:vsnip_filetypes.typescriptreact = ['typescript']
+" endif
 
 " tweak diff colors
 highlight DiffAdd    cterm=bold ctermfg=10 ctermbg=22
