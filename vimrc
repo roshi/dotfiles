@@ -12,19 +12,16 @@ Plug 'dracula/vim'
 Plug 'vim-scripts/dbext.vim'
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'tpope/vim-fugitive'
-" Plug 'tpope/vim-dadbod'
 " Plug 'w0rp/ale'
 " Plug 'tpope/vim-surround'
 " Plug 'andymass/vim-matchup'
 Plug 'ctrlpvim/ctrlp.vim'
-if has('gui_running')
-  Plug 'prabirshrestha/async.vim'
-  Plug 'prabirshrestha/asyncomplete.vim'
-  Plug 'prabirshrestha/asyncomplete-lsp.vim'
-  Plug 'prabirshrestha/vim-lsp'
-  Plug 'hrsh7th/vim-vsnip'
-  Plug 'hrsh7th/vim-vsnip-integ'
-endif
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'hrsh7th/vim-vsnip'
+Plug 'hrsh7th/vim-vsnip-integ'
 source $VIMRUNTIME/macros/matchit.vim
 
 call plug#end()
@@ -169,18 +166,28 @@ let g:asyncomplete_smart_completion = 1
 let g:asyncomplete_auto_popup = 1
 
 " lsp
-let g:lsp_preview_float = 1
-let g:lsp_signature_help_enabled = 0
+" let g:lsp_preview_float = 1
+" let g:lsp_signature_help_enabled = 0
 " let g:lsp_diagnostics_enabled = 0
 " let g:lsp_log_verbose = 1
 " let g:lsp_log_file = expand('~/.vim/vim-lsp.log')
 function! s:on_lsp_buffer_enabled() abort
   setlocal omnifunc=lsp#complete
-  nnoremap <buffer> <C-]> :<C-u>LspDefinition<CR>
-  nnoremap <buffer> gd :<C-u>LspPeekDefinition<CR>
-  nnoremap <buffer> gr :<C-u>LspReferences<CR>
-  nnoremap <buffer> gs :<C-u>LspDocumentSymbol<CR>
-  nnoremap <buffer> K :<C-u>LspHover<CR>
+  setlocal signcolumn=yes
+  if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+  nmap <buffer> gd <plug>(lsp-definition)
+  nmap <buffer> gs <plug>(lsp-document-symbol-search)
+  nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+  nmap <buffer> gr <plug>(lsp-reference)
+  nmap <buffer> gi <plug>(lsp-implementation)
+  nmap <buffer> gt <plug>(lsp-type-definition)
+  nmap <buffer> gc <plug>(lsp-document-diagnostics)
+  nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+  nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+  nmap <buffer> K <plug>(lsp-hover)
+
+  let g:lsp_format_sync_timeout = 1000
+  autocmd! BufWritePre *rs,*.go call execute('LspDocumentFormatSync')
 endfunction
 augroup lsp_install
   au!
