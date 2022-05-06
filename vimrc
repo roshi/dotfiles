@@ -47,15 +47,14 @@ set autochdir
 set hidden
 set noswapfile
 set nobackup
-set viminfo=
+set viminfo='1000
 
 " input
 set backspace=indent,eol,start
 set formatoptions=lmoq
 set clipboard=unnamed,autoselect
 set virtualedit=block
-" inoremap \ ¥
-inoremap ¥ \
+inoremap <Char-0xa5> <Char-0x5c>
 
 " indent
 set tabstop=4 shiftwidth=4 softtabstop=0
