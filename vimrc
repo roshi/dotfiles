@@ -5,18 +5,20 @@
 call plug#begin('~/.vim/plugged')
 
 Plug 'thinca/vim-quickrun'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
 Plug 'AndrewRadev/linediff.vim'
 Plug 'itchyny/lightline.vim'
 Plug 'dracula/vim'
 Plug 'vim-scripts/dbext.vim'
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'tpope/vim-fugitive'
+Plug 'jremmen/vim-ripgrep'
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'prabirshrestha/vim-lsp'
+Plug 'hrsh7th/vim-vsnip'
+Plug 'hrsh7th/vim-vsnip-integ'
 source $VIMRUNTIME/macros/matchit.vim
 
 call plug#end()
@@ -29,6 +31,7 @@ set undodir=~/.vim/tmp
 
 " filetype
 au FileType sql set softtabstop=2 | set shiftwidth=2 | set expandtab
+au FileType help,qf,quickrun nnoremap <buffer> q :<C-u>q<CR>
 
 " dracula
 let g:dracula_italic = 0
@@ -44,14 +47,15 @@ set autochdir
 set hidden
 set noswapfile
 set nobackup
-set viminfo='1000
+set viminfo=
 
 " input
 set backspace=indent,eol,start
 set formatoptions=lmoq
 set clipboard=unnamed,autoselect
 set virtualedit=block
-inoremap <Char-0xa5> <Char-0x5c>
+" inoremap \ ¥
+inoremap ¥ \
 
 " indent
 set tabstop=4 shiftwidth=4 softtabstop=0
@@ -88,6 +92,10 @@ set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=utf-8,cp932
 
+" tab
+nnoremap <C-j> :tabnext<CR>
+nnoremap <C-k> :tabprevious<CR>
+
 " quickrun
 let g:quickrun_config = {}
 let g:quickrun_config._ = {'outputter/buffer/opener': 'split'}
@@ -111,7 +119,7 @@ function! DBextMysqlDDL(...)
 
   return dbext#DB_execSql('show create table `' . table_name . '`')
 endfunction
-nnoremap <unique> <Leader>sds :call DBextMysqlDDL()<CR>
+nnoremap <silent> <Leader>sds :call DBextMysqlDDL()<CR>
 
 " vim-table-mode
 let g:table_mode_corner_corner = '+'
@@ -125,13 +133,21 @@ function! LightlineConnection()
   return exists(':DB_listOption') ? DB_listOption('profile') : (100 * line('.') / line('$')) . '%'
 endfunction
 
-" fzf
-nnoremap [fzf] <Nop>
-nmap <space> [fzf]
-nnoremap <silent> [fzf]f :Files<CR>
-nnoremap <silent> [fzf]g :GFiles<CR>
-nnoremap <silent> [fzf]m :History<CR>
-nnoremap <silent> [fzf]b :Buffers<CR>
+" ctrlp
+let g:ctrlp_cmd = 'CtrlPMRU'
+let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_switch_buffer = 'et'
+let g:ctrlp_user_command = 'rg --files --color=never %s'
+let g:ctrlp_match_window = 'bottom,btt,min:1,max:10,results:100'
+" let g:ctrlp_mruf_exclude = '^\/'
+let g:ctrlp_prompt_mappings = { 'PrtInsert()': ['<c-\>', '<c-q>'] }
+nnoremap [ctrlp] <Nop>
+nmap <space> [ctrlp]
+nnoremap <silent> [ctrlp]f :CtrlPCurFile<CR>
+nnoremap <silent> [ctrlp]w :CtrlPCurWD<CR>
+nnoremap <silent> [ctrlp]g :CtrlPRoot<CR>
+nnoremap <silent> [ctrlp]m :CtrlPMRU<CR>
+nnoremap <silent> [ctrlp]b :CtrlPBuffer<CR>
 
 " asyncomplete
 let g:asyncomplete_remove_duplicates = 1
@@ -144,6 +160,7 @@ let g:asyncomplete_auto_popup = 1
 " let g:lsp_diagnostics_enabled = 0
 " let g:lsp_log_verbose = 1
 " let g:lsp_log_file = expand('~/.vim/vim-lsp.log')
+let g:lsp_diagnostics_echo_cursor = 1
 function! s:on_lsp_buffer_enabled() abort
   setlocal omnifunc=lsp#complete
   setlocal signcolumn=yes
@@ -160,7 +177,6 @@ function! s:on_lsp_buffer_enabled() abort
   nmap <buffer> K <plug>(lsp-hover)
 
   let g:lsp_format_sync_timeout = 1000
-  autocmd! BufWritePre *rs,*.go call execute('LspDocumentFormatSync')
 endfunction
 augroup lsp_install
   au!
@@ -168,56 +184,38 @@ augroup lsp_install
 augroup END
 
 " lsp:golang
+" go install golang.org/x/tools/gopls@latest
 if executable('gopls')
-  autocmd User lsp_setup call lsp#register_server({
-    \ 'name': 'gopls',
-    \ 'cmd': {server_info->['gopls', '-mode', 'stdio']},
-    \ 'whitelist': ['go'],
-    \ })
-  autocmd BufWritePre *.go LspDocumentFormatSync
+  augroup gopls
+    autocmd!
+    autocmd User lsp_setup call lsp#register_server({
+      \ 'name': 'gopls',
+      \ 'cmd': {server_info->['gopls', '-mode', 'stdio']},
+      \ 'whitelist': ['go'],
+      \ })
+    autocmd BufWritePre *.go LspDocumentFormatSync
+  augroup END
 endif
 
-" lsp:java
-" https://github.com/prabirshrestha/vim-lsp/wiki/Servers-Java
-" let s:lombok_path = expand('~/.vim/jdtls/lombok.jar')
-" let s:jdtls_launcher = expand('~/.vim/jdtls/plugins/org.eclipse.equinox.launcher_1.5.700.v20200207-2156.jar')
-" if has('gui_running') && executable('java') && filereadable(s:jdtls_launcher)
-"   autocmd User lsp_setup call lsp#register_server({
-"     \ 'name': 'eclipse.jdt.ls',
-"     \ 'cmd': {server_info->[
-"     \    'java',
-"     \    '-javaagent:' . s:lombok_path,
-"     \    '-Xbootclasspath/a:' . s:lombok_path,
-"     \    '-Declipse.application=org.eclipse.jdt.ls.core.id1',
-"     \    '-Dosgi.bundles.defaultStartLevel=4',
-"     \    '-Declipse.product=org.eclipse.jdt.ls.core.product',
-"     \    '-Dlog.level=ALL',
-"     \    '-noverify',
-"     \    '-Dfile.encoding=UTF-8',
-"     \    '-Xmx1G',
-"     \    '-jar',
-"     \    s:jdtls_launcher,
-"     \    '-configuration',
-"     \    expand('~/.vim/jdtls/config_' . (has('mac') ? 'mac' : 'win')),
-"     \    '-data',
-"     \    expand('~/.vim/jdtls')
-"     \ ]},
-"     \ 'root_uri': {server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_directory(lsp#utils#get_buffer_path(), '.git/'))},
-"     \ 'whitelist': ['java'],
-"     \ })
-" endif
-
 " lsp:python
-if executable('pyls')
+" python3 -m pip install python-lsp-server python-lsp-black pylsp-mypy pyls-isort pyls-flake8
+if executable('pylsp')
   augroup pylsp
+    autocmd!
     autocmd User lsp_setup call lsp#register_server({
-      \ 'name': 'pyls',
-      \ 'cmd': { server_info -> ['pyls'] },
-      \ 'whitelist': ['python'],
-      \ 'workspace_config': { 'pyls': { 'plugins': {
-      \   'pycodestyle': { 'enabled': v:false },
-      \   'jedi_definition': { 'follow_imports': v:true, 'follow_builtin_imports': v:true }, }}}
+      \ 'name': 'pylsp',
+      \ 'cmd': { server_info -> ['pylsp'] },
+      \ 'allowlist': ['python'],
+      \ 'workspace_config': { 'pylsp': {
+      \   'configurationSources': ['flake8'],
+      \   'plugins': {
+      \     'black': { 'enabled': v:true, 'line_length': 119 },
+      \     'flake8': { 'enabled': v:true, 'maxLineLength': 119 },
+      \     'pylsp_mypy': { 'enabled': v:true }
+      \   }
+      \ }}
       \ })
+    autocmd BufWritePre *.py LspDocumentFormatSync
   augroup END
 endif
 
@@ -229,3 +227,20 @@ highlight DiffText   cterm=bold ctermfg=10 ctermbg=21
 
 " copy path to clipboard
 nnoremap <silent> <Leader>\ :let @+ = expand("%:p")<CR>
+
+
+""""""""""
+" local-scope .vimrc
+""""""""""
+" exec 'source ~/.vim/autoload/plug.vim'
+"
+" func! LcdAndRg(path)
+"   let l:keyword = input('input keyword to search under ' . a:path . ': ')
+"   exec 'lcd' a:path '|' 'Rg' l:keyword
+" endfunc
+" nnoremap <silent> [ctrlp]lc :call LcdAndRg('~/projects')<CR>
+
+" dbext
+" let g:dbext_default_history_file = expand('~/.vim/tmp/dbext_sql_history.txt')
+" let g:dbext_default_profile_LOCAL = 'type=MYSQL:user=root:passwd=:dbname=mysql:host=localhost'
+" let g:dbext_default_profile = 'None'
