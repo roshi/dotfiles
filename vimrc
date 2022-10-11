@@ -91,9 +91,14 @@ set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=utf-8,cp932
 
-" tab
-nnoremap <C-j> :tabnext<CR>
-nnoremap <C-k> :tabprevious<CR>
+" misc
+set belloff=all
+
+" tab/buffer
+nnoremap <C-n> :tabnext<CR>
+nnoremap <C-p> :tabprevious<CR>
+nnoremap <C-j> :bnext<CR>
+nnoremap <C-k> :bprevious<CR>
 
 " quickrun
 let g:quickrun_config = {}
