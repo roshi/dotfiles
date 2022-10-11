@@ -11,6 +11,7 @@ endif
 set lines=55 columns=150
 set guioptions-=T
 set guioptions-=m
+set guioptions-=L
 set title
 hi CursorLine gui=underline guibg=NONE
 map ¥ <leader>
