@@ -109,7 +109,7 @@ set fileencodings=utf-8,cp932
 
 " quickrun
 let g:quickrun_config = {}
-let g:quickrun_config._ = {'outputter/buffer/split': 'below'}
+let g:quickrun_config._ = {'outputter/buffer/opener': 'split'}
 nnoremap <silent> <Leader>R :<C-u>QuickRun sh<CR>
 vnoremap <silent> <Leader>R :<C-u>'<,'>QuickRun sh<CR>
 
@@ -180,7 +180,7 @@ function! s:on_lsp_buffer_enabled() abort
   nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
   nmap <buffer> gr <plug>(lsp-reference)
   nmap <buffer> gi <plug>(lsp-implementation)
-  nmap <buffer> gt <plug>(lsp-type-definition)
+  nmap <buffer> gy <plug>(lsp-type-definition)
   nmap <buffer> gc <plug>(lsp-document-diagnostics)
   nmap <buffer> [g <plug>(lsp-previous-diagnostic)
   nmap <buffer> ]g <plug>(lsp-next-diagnostic)
