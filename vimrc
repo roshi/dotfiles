@@ -110,20 +110,38 @@ vnoremap <silent> <Leader>R :<C-u>'<,'>QuickRun sh<CR>
 let g:dbext_default_display_cmd_line = 0
 let g:dbext_default_prompt_for_parameters = 0
 let g:dbext_default_MYSQL_cmd_options = '--default-character-set=utf8mb4'
-function! DBextMysqlDDL(...)
-  if (a:0 > 0)
-    let table_name = s:DB_getObjectAndQuote(a:1)
-  else
-    let table_name = expand("<cword>")
-  endif
+function! DBextGetTableName() abort
+  let table_name = expand("<cword>")
   if table_name == ""
-    call s:DB_warningMsg('dbext:You must supply a table name')
+    echoerr 'You must supply a table name'
     return ""
   endif
-
-  return dbext#DB_execSql('show create table `' . table_name . '`')
+  return table_name
 endfunction
-nnoremap <silent> <Leader>sds :call DBextMysqlDDL()<CR>
+function! DBextConcatOption(param, value, separator)
+  if a:value == ""
+    return ""
+  else
+    return a:param . a:value . a:separator
+  endif
+endfunction
+function! DBextMysqlDDL(...)
+  return dbext#DB_execSql('show create table `' . DBextGetTableName() . '`')
+endfunction
+function! DBextPgsqlDDL(...)
+  let cmd = 'pg_dump ' .
+    \ dbext#DB_getWType("cmd_options") .
+    \ DBextConcatOption(' -d', dbext#DB_getWTypeDefault("dbname"), ' ') .
+    \ DBextConcatOption(' -U', dbext#DB_getWTypeDefault("user"), ' ') .
+    \ DBextConcatOption(' -h', dbext#DB_getWTypeDefault("host"), ' ') .
+    \ DBextConcatOption(' -p', dbext#DB_getWTypeDefault("port"), ' ') .
+    \ DBextConcatOption(' -t', DBextGetTableName(), ' ') .
+    \ DBextConcatOption(' ', dbext#DB_getWTypeDefault("extra"), '') .
+    \ ' -s'
+  " -f ' . dbext#DB_getWTypeDefault("temp_file")
+  return dbext#DB_execFuncWCheck("runCmd", cmd, "", "")
+endfunction
+nnoremap <silent> <Leader>sds :call DBextPgsqlDDL()<CR>
 
 " vim-table-mode
 let g:table_mode_corner_corner = '+'
