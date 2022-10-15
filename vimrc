@@ -40,6 +40,10 @@ au FileType sql set softtabstop=2 | set shiftwidth=2 | set expandtab
 
 " dracula
 let g:dracula_italic = 0
+augroup dracula_customization
+  au!
+  autocmd ColorScheme dracula hi! link SpecialKey DraculaSubtle
+augroup END
 colorscheme dracula
 
 " file
