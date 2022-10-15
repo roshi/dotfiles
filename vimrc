@@ -1,58 +1,42 @@
-if &compatible
-  set nocompatible
-endif
+call plug#begin('~/.vim/plugged')
 
-let s:dein_dir=expand('~/.cache/dein')
-let s:dein_vim_dir=s:dein_dir . '/repos/github.com/Shougo/dein.vim'
-let s:vim_tmp_dir=expand('~/.cache/vim')
+Plug 'thinca/vim-quickrun'
+Plug 'jremmen/vim-ripgrep'
+Plug 'AndrewRadev/linediff.vim'
+Plug 'itchyny/lightline.vim'
+Plug 'fatih/vim-go'
+Plug 'derekwyatt/vim-scala'
+Plug 'dracula/vim'
+Plug 'vim-scripts/dbext.vim'
+Plug 'dhruvasagar/vim-table-mode'
+Plug 'tpope/vim-fugitive'
+Plug 'w0rp/ale'
+Plug 'tpope/vim-surround'
+Plug 'ctrlpvim/ctrlp.vim'
 
-if &runtimepath !~# '/dein.vim'
-  if !isdirectory(s:vim_tmp_dir)
-    call mkdir(s:vim_tmp_dir, 'p')
-  endif
-  if !isdirectory(s:dein_vim_dir)
-    execute '!git clone https://github.com/Shougo/dein.vim' s:dein_vim_dir
-  endif
-  execute 'set runtimepath^=' . s:dein_vim_dir
-endif
+call plug#end()
 
-if dein#load_state(s:dein_dir)
-  call dein#begin(s:dein_dir)
 
-  call dein#add(s:dein_vim_dir)
-  call dein#add('Shougo/unite.vim')
-  call dein#add('Shougo/neomru.vim')
-  call dein#add('dracula/vim', {'merged': 0})
-  call dein#source('dracula')
-  call dein#add('itchyny/lightline.vim')
-  call dein#add('thinca/vim-quickrun')
-  call dein#add('AndrewRadev/linediff.vim')
-  call dein#add('jremmen/vim-ripgrep')
+" filetype
+au FileType sql set softtabstop=2 | set shiftwidth=2 | set expandtab
 
-  call dein#end()
-  call dein#save_state()
-endif
-
-filetype plugin indent on
-syntax enable
-
-if dein#check_install()
-  call dein#install()
-endif
-
+" dracula
+let g:dracula_italic = 0
+colorscheme dracula
 
 " file
 set autoread
 set hidden
 set noswapfile
 set nobackup
+set viminfo=
 
 " input
 set backspace=indent,eol,start
 set formatoptions=lmoq
 set clipboard=unnamed,autoselect
 set virtualedit=block
-inoremap ¥ \
+inoremap \ \
 
 " indent
 set tabstop=4 shiftwidth=4 softtabstop=0
@@ -79,17 +63,14 @@ set title
 set scrolloff=5
 set display=uhex
 set foldlevel=99
-set cursorline
 set splitbelow
-
-" status
-set laststatus=2
-set statusline=%f%m%=[%l:%c][0x%02B]%y[%{&fileencoding}][%{&fileformat}]
+set cursorline
+highlight CursorLine cterm=underline ctermfg=NONE ctermbg=NONE
 
 " backup
-let &directory=s:vim_tmp_dir
-let &backupdir=s:vim_tmp_dir
-let &undodir=s:vim_tmp_dir
+set directory=~/.vim/tmp
+set backupdir=~/.vim/tmp
+set undodir=~/.vim/tmp
 
 " encoding
 set termencoding=utf-8
@@ -97,37 +78,59 @@ set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=utf-8,cp932
 
-" dracula
-let g:dracula_italic=0
-colorscheme dracula
+" ale
+let g:ale_lint_on_save = 0
+let g:ale_lint_on_filetype_changed = 0
+let g:ale_lint_on_text_changed = 0
+let g:ale_lint_on_enter = 0
+let g:ale_fix_on_save = 1
+" let g:ale_fixers = {'php': ['prettier']}
+" let g:ale_java_google_java_format_options = '--aosp'
 
 " quickrun
-let g:quickrun_config={}
-let g:quickrun_config._={'split': 'below'}
+let g:quickrun_config = {}
+let g:quickrun_config._ = {'split': 'below'}
+nnoremap <silent> <Leader>R :<C-u>QuickRun sh<CR>
+vnoremap <silent> <Leader>R :<C-u>'<,'>QuickRun sh<CR>
 
-" unite
-let g:unite_enable_start_insert=1
-let g:unite_source_history_yank_enable=1
-let g:unite_enable_ignore_case=1
-let g:unite_enable_smart_case=1
+" dbext
+let g:dbext_default_display_cmd_line = 0
+let g:dbext_default_MYSQL_cmd_options = '--default-character-set=utf8mb4'
 
-nnoremap [unite] <Nop>
-nmap <Space> [unite]
+" vim-table-mode
+let g:table_mode_corner_corner = '+'
+vnoremap <silent> <Leader>tu :<C-u>'<,'>!perl -lne "@F = split(/ *\x7c */); print join(chr(0x9), splice(@F, 1, -1))"<CR>
 
-nnoremap <silent> [unite]f :<C-u>UniteWithBufferDir -buffer-name=files file file/new<CR>
-nnoremap <silent> [unite]b :<C-u>Unite buffer<CR>
-nnoremap <silent> [unite]m :<C-u>Unite file_mru<CR>
-nnoremap <silent> [unite]r :<C-u>Unite file_rec/async:!<CR>
-nnoremap <silent> [unite]g :<C-u>Unite file_rec/git:!<CR>
+" status
+set laststatus=2
+let g:lightline = { 'active': { 'right': [ ['lineinfo'], ['connection'], ['fileformat', 'fileencoding', 'filetype', 'charvaluehex'] ] }, 'component': { 'charvaluehex': '0x%02B' } }
 
-au FileType unite nnoremap <silent> <buffer> <ESC><ESC> :q<CR>
-au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>:q<CR>
+" ctrlp
+let g:ctrlp_cmd = 'CtrlPMRU'
+let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_switch_buffer = 'et'
+let g:ctrlp_user_command = 'rg --files --color=never %s'
+let g:ctrlp_match_window = 'bottom,btt,min:1,max:10,results:100'
+let g:ctrlp_mruf_exclude = '^\/'
+nnoremap [ctrlp] <Nop>
+nmap <space> [ctrlp]
+nnoremap <silent> [ctrlp]f :CtrlPCurFile<CR>
+nnoremap <silent> [ctrlp]m :CtrlPMRU<CR>
+nnoremap <silent> [ctrlp]b :CtrlPBuffer<CR>
 
-" neomru
-if has('win32unix')
-  let g:neomru#file_mru_ignore_pattern='^/'
-  let g:neomru#directory_mru_ignore_pattern='^/'
+" golang
+if $GOROOT != ''
+  set runtimepath+=$GOROOT/misc/vim
 endif
 
 " matchit
 source $VIMRUNTIME/macros/matchit.vim
+
+" tweak diff colors
+highlight DiffAdd    cterm=bold ctermfg=10 ctermbg=22
+highlight DiffDelete cterm=bold ctermfg=10 ctermbg=52
+highlight DiffChange cterm=bold ctermfg=10 ctermbg=17
+highlight DiffText   cterm=bold ctermfg=10 ctermbg=21
+
+" copy path to clipboard
+nnoremap <silent> <Leader>\ :let @+ = expand("%:p")<CR>
