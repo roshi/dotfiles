@@ -191,6 +191,7 @@ let g:lsp_diagnostics_enabled = 1
 " let g:lsp_log_verbose = 1
 " let g:lsp_log_file = expand('~/.vim/vim-lsp.log')
 let g:lsp_diagnostics_virtual_text_enabled = 1
+let g:lsp_inlay_hints_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
 function! s:on_lsp_buffer_enabled() abort
   setlocal omnifunc=lsp#complete
@@ -232,7 +233,7 @@ if executable('gopls')
 endif
 
 " lsp:python
-" python3 -m pip install python-lsp-server python-lsp-black pylsp-mypy pyls-isort pyls-flake8
+" python3 -m pip install python-lsp-server python-lsp-black pylsp-mypy pyls-isort pyls-flake8 pyproject-flake8
 if executable('pylsp')
   augroup pylsp
     autocmd!
@@ -243,8 +244,9 @@ if executable('pylsp')
       \   'workspace_config': {'pylsp': {
       \     'configurationSources': ['flake8'],
       \     'plugins': {
+      \       'pycodestyle': { 'enabled': v:true },
       \       'black': {'enabled': v:true, 'line_length': 119},
-      \       'flake8': {'enabled': v:true, 'maxLineLength': 119},
+      \       'flake8': {'enabled': v:true, 'maxLineLength': 119, 'executable': 'pflake8'},
       \       'pylsp_mypy': {'enabled': v:true}
       \     }
       \   }}
