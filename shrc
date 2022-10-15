@@ -1,0 +1,5 @@
+# load each new shell process
+
+alias ll='ls -al --color'
+
+#vim: set ft=sh
