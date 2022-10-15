@@ -1,21 +1,40 @@
-call plug#begin('~/.vim/plugged')
+" cd /path/to/vim/vim*/autoload
+" curl -fLo plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+" mkdir ~/.cache/plugged ~/.cache/vim
+
+call plug#begin('~/.cache/plugged')
 
 Plug 'thinca/vim-quickrun'
 Plug 'jremmen/vim-ripgrep'
 Plug 'AndrewRadev/linediff.vim'
 Plug 'itchyny/lightline.vim'
-Plug 'fatih/vim-go'
-Plug 'derekwyatt/vim-scala'
+" Plug 'fatih/vim-go'
+" Plug 'derekwyatt/vim-scala'
 Plug 'dracula/vim'
 Plug 'vim-scripts/dbext.vim'
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'tpope/vim-fugitive'
-Plug 'w0rp/ale'
-Plug 'tpope/vim-surround'
+" Plug 'w0rp/ale'
+" Plug 'tpope/vim-surround'
+" Plug 'andymass/vim-matchup'
 Plug 'ctrlpvim/ctrlp.vim'
+if has('gui_running')
+  Plug 'prabirshrestha/async.vim'
+  Plug 'prabirshrestha/asyncomplete.vim'
+  Plug 'prabirshrestha/asyncomplete-lsp.vim'
+  Plug 'prabirshrestha/vim-lsp'
+  " Plug 'SirVer/ultisnips'
+  " Plug 'honza/vim-snippets'
+endif
+source $VIMRUNTIME/macros/matchit.vim
 
 call plug#end()
 
+
+" backup
+set directory=~/.cache/vim
+set backupdir=~/.cache/vim
+set undodir=~/.cache/vim
 
 " filetype
 au FileType sql set softtabstop=2 | set shiftwidth=2 | set expandtab
@@ -26,6 +45,7 @@ colorscheme dracula
 
 " file
 set autoread
+set autochdir
 set hidden
 set noswapfile
 set nobackup
@@ -67,11 +87,6 @@ set splitbelow
 set cursorline
 highlight CursorLine cterm=underline ctermfg=NONE ctermbg=NONE
 
-" backup
-set directory=~/.vim/tmp
-set backupdir=~/.vim/tmp
-set undodir=~/.vim/tmp
-
 " encoding
 set termencoding=utf-8
 set encoding=utf-8
@@ -79,11 +94,11 @@ set fileencoding=utf-8
 set fileencodings=utf-8,cp932
 
 " ale
-let g:ale_lint_on_save = 0
-let g:ale_lint_on_filetype_changed = 0
-let g:ale_lint_on_text_changed = 0
-let g:ale_lint_on_enter = 0
-let g:ale_fix_on_save = 1
+" let g:ale_lint_on_save = 0
+" let g:ale_lint_on_filetype_changed = 0
+" let g:ale_lint_on_text_changed = 0
+" let g:ale_lint_on_enter = 0
+" let g:ale_fix_on_save = 1
 " let g:ale_fixers = {'php': ['prettier']}
 " let g:ale_java_google_java_format_options = '--aosp'
 
@@ -113,18 +128,84 @@ let g:ctrlp_user_command = 'rg --files --color=never %s'
 let g:ctrlp_match_window = 'bottom,btt,min:1,max:10,results:100'
 let g:ctrlp_mruf_exclude = '^\/'
 nnoremap [ctrlp] <Nop>
-nmap <space> [ctrlp]
-nnoremap <silent> [ctrlp]f :CtrlPCurFile<CR>
+nmap , [ctrlp]
+nnoremap <silent> [ctrlp]f :CtrlPCurWD<CR>
+nnoremap <silent> [ctrlp]g :CtrlPRoot<CR>
 nnoremap <silent> [ctrlp]m :CtrlPMRU<CR>
 nnoremap <silent> [ctrlp]b :CtrlPBuffer<CR>
 
+" lsp
+let g:lsp_preview_float = 1
+" let g:lsp_diagnostics_enabled = 0
+let lsp_signature_help_enabled = 0
+let g:lsp_log_verbose = 1
+" let g:lsp_log_file = expand('~/vim-lsp.log')
+function! s:configure_lsp() abort
+  setlocal omnifunc=lsp#complete
+  nnoremap <buffer> gd :<C-u>LspDefinition<CR>
+  nnoremap <buffer> gD :<C-u>LspReferences<CR>
+  nnoremap <buffer> K :<C-u>LspHover<CR>
+endfunction
+
+" asyncomplete
+let g:asyncomplete_remove_duplicates = 1
+let g:asyncomplete_smart_completion = 1
+let g:asyncomplete_auto_popup = 1
+
 " golang
-if $GOROOT != ''
-  set runtimepath+=$GOROOT/misc/vim
+if has('gui_running') && executable('gopls')
+  autocmd User lsp_setup call lsp#register_server({
+    \ 'name': 'gopls',
+    \ 'cmd': {server_info->['gopls', '-mode', 'stdio']},
+    \ 'whitelist': ['go'],
+    \ })
+  autocmd BufWritePre *.go LspDocumentFormatSync
+  autocmd FileType go call s:configure_lsp()
 endif
 
-" matchit
-source $VIMRUNTIME/macros/matchit.vim
+" java
+" let s:lombok_path = expand('~/.cache/jdtls/lombok.jar')
+" let s:jdtls_launcher = expand('~/.cache/jdtls/plugins/org.eclipse.equinox.launcher_1.5.700.v20200207-2156.jar')
+" if has('gui_running') && executable('java') && filereadable(s:jdtls_launcher)
+"   autocmd User lsp_setup call lsp#register_server({
+"     \ 'name': 'eclipse.jdt.ls',
+"     \ 'cmd': {server_info->[
+"     \    'java',
+"     \    '-javaagent:' . s:lombok_path,
+"     \    '-Xbootclasspath/a:' . s:lombok_path,
+"     \    '-Declipse.application=org.eclipse.jdt.ls.core.id1',
+"     \    '-Dosgi.bundles.defaultStartLevel=4',
+"     \    '-Declipse.product=org.eclipse.jdt.ls.core.product',
+"     \    '-Dlog.level=ALL',
+"     \    '-noverify',
+"     \    '-Dfile.encoding=UTF-8',
+"     \    '-Xmx1G',
+"     \    '-jar',
+"     \    s:jdtls_launcher,
+"     \    '-configuration',
+"     \    expand('~/.vim/jdtls/config_win'),
+"     \    '-data',
+"     \    expand('~/.vim/jdtls/workspace')
+"     \ ]},
+"     \ 'whitelist': ['java'],
+"     \ })
+" endif
+    " \ 'root_uri': {server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), '.git/..'))},
+
+" python
+if has('gui_running') && executable('pyls')
+  augroup pylsp
+    autocmd User lsp_setup call lsp#register_server({
+      \ 'name': 'pyls',
+      \ 'cmd': { server_info -> ['pyls'] },
+      \ 'whitelist': ['python'],
+      \ 'workspace_config': { 'pyls': { 'plugins': {
+      \   'pycodestyle': { 'enabled': v:false },
+      \   'jedi_definition': { 'follow_imports': v:true, 'follow_builtin_imports': v:true }, }}}
+      \ })
+    autocmd FileType python call s:configure_lsp()
+  augroup END
+endif
 
 " tweak diff colors
 highlight DiffAdd    cterm=bold ctermfg=10 ctermbg=22
