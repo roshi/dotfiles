@@ -55,8 +55,8 @@ set backspace=indent,eol,start
 set formatoptions=lmoq
 set clipboard=unnamed,autoselect
 set virtualedit=block
+" inoremap \ ¥
 inoremap ¥ \
-inoremap \ ¥
 
 " indent
 set tabstop=4 shiftwidth=4 softtabstop=0
@@ -131,6 +131,7 @@ let g:ctrlp_switch_buffer = 'et'
 let g:ctrlp_user_command = 'rg --files --color=never %s'
 let g:ctrlp_match_window = 'bottom,btt,min:1,max:10,results:100'
 let g:ctrlp_mruf_exclude = '^\/'
+let g:ctrlp_prompt_mappings = { 'PrtInsert()': ['<c-\>', '<c-^>'] }
 nnoremap [ctrlp] <Nop>
 nmap <space> [ctrlp]
 nnoremap <silent> [ctrlp]f :CtrlPCurWD<CR>
@@ -140,9 +141,9 @@ nnoremap <silent> [ctrlp]b :CtrlPBuffer<CR>
 
 " lsp
 let g:lsp_preview_float = 1
-" let g:lsp_diagnostics_enabled = 0
 let lsp_signature_help_enabled = 0
-let g:lsp_log_verbose = 1
+" let g:lsp_diagnostics_enabled = 0
+" let g:lsp_log_verbose = 1
 " let g:lsp_log_file = expand('~/vim-lsp.log')
 function! s:configure_lsp() abort
   setlocal omnifunc=lsp#complete
