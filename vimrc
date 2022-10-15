@@ -73,7 +73,7 @@ set splitbelow
 
 " status
 set laststatus=2
-set statusline=%f%m%=[0x%B]%y[%{&fileencoding}][%{&fileformat}]
+set statusline=%f%m%=[%l:%c][0x%02B]%y[%{&fileencoding}][%{&fileformat}]
 
 " backup
 set directory=~/.vim/tmp
