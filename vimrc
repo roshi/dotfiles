@@ -8,7 +8,6 @@ Plug 'thinca/vim-quickrun'
 Plug 'jremmen/vim-ripgrep'
 Plug 'AndrewRadev/linediff.vim'
 Plug 'itchyny/lightline.vim'
-" Plug 'fatih/vim-go'
 " Plug 'derekwyatt/vim-scala'
 Plug 'dracula/vim'
 Plug 'vim-scripts/dbext.vim'
@@ -56,7 +55,8 @@ set backspace=indent,eol,start
 set formatoptions=lmoq
 set clipboard=unnamed,autoselect
 set virtualedit=block
-inoremap \ \
+inoremap ¥ \
+inoremap \ ¥
 
 " indent
 set tabstop=4 shiftwidth=4 softtabstop=0
@@ -119,6 +119,10 @@ vnoremap <silent> <Leader>tu :<C-u>'<,'>!perl -lne "@F = split(/ *\x7c */); prin
 " status
 set laststatus=2
 let g:lightline = { 'active': { 'right': [ ['lineinfo'], ['connection'], ['fileformat', 'fileencoding', 'filetype', 'charvaluehex'] ] }, 'component': { 'charvaluehex': '0x%02B' } }
+let g:lightline.component_function = { 'connection': 'LightlineConnection' }
+function! LightlineConnection()
+  return exists(':DB_listOption') ? DB_listOption('profile') : (100 * line('.') / line('$')) . '%'
+endfunction
 
 " ctrlp
 let g:ctrlp_cmd = 'CtrlPMRU'
@@ -128,7 +132,7 @@ let g:ctrlp_user_command = 'rg --files --color=never %s'
 let g:ctrlp_match_window = 'bottom,btt,min:1,max:10,results:100'
 let g:ctrlp_mruf_exclude = '^\/'
 nnoremap [ctrlp] <Nop>
-nmap , [ctrlp]
+nmap <space> [ctrlp]
 nnoremap <silent> [ctrlp]f :CtrlPCurWD<CR>
 nnoremap <silent> [ctrlp]g :CtrlPRoot<CR>
 nnoremap <silent> [ctrlp]m :CtrlPMRU<CR>
@@ -142,8 +146,9 @@ let g:lsp_log_verbose = 1
 " let g:lsp_log_file = expand('~/vim-lsp.log')
 function! s:configure_lsp() abort
   setlocal omnifunc=lsp#complete
-  nnoremap <buffer> gd :<C-u>LspDefinition<CR>
-  nnoremap <buffer> gD :<C-u>LspReferences<CR>
+  nnoremap <buffer> <C-]> :<C-u>LspDefinition<CR>
+  nnoremap <buffer> gd :<C-u>LspPeekDefinition<CR>
+  nnoremap <buffer> gr :<C-u>LspReferences<CR>
   nnoremap <buffer> K :<C-u>LspHover<CR>
 endfunction
 
