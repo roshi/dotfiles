@@ -1,4 +1,5 @@
 set iminsert=0
+set imsearch=0
 
 if has('mac')
   set guifont=Menlo:h12
