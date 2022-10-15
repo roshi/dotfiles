@@ -5,23 +5,18 @@
 call plug#begin('~/.vim/plugged')
 
 Plug 'thinca/vim-quickrun'
-Plug 'jremmen/vim-ripgrep'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 Plug 'AndrewRadev/linediff.vim'
 Plug 'itchyny/lightline.vim'
 Plug 'dracula/vim'
 Plug 'vim-scripts/dbext.vim'
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'tpope/vim-fugitive'
-" Plug 'w0rp/ale'
-" Plug 'tpope/vim-surround'
-" Plug 'andymass/vim-matchup'
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'prabirshrestha/vim-lsp'
-Plug 'hrsh7th/vim-vsnip'
-Plug 'hrsh7th/vim-vsnip-integ'
 source $VIMRUNTIME/macros/matchit.vim
 
 call plug#end()
@@ -49,15 +44,14 @@ set autochdir
 set hidden
 set noswapfile
 set nobackup
-set viminfo=
+set viminfo='1000
 
 " input
 set backspace=indent,eol,start
 set formatoptions=lmoq
 set clipboard=unnamed,autoselect
 set virtualedit=block
-" inoremap \ ¥
-inoremap ¥ \
+inoremap <Char-0xa5> <Char-0x5c>
 
 " indent
 set tabstop=4 shiftwidth=4 softtabstop=0
@@ -93,19 +87,6 @@ set termencoding=utf-8
 set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=utf-8,cp932
-
-" ale
-" let g:ale_lint_on_save = 0
-" let g:ale_lint_on_filetype_changed = 0
-" let g:ale_lint_on_text_changed = 0
-" let g:ale_lint_on_enter = 0
-" let g:ale_fix_on_save = 1
-" let g:ale_fixers = {'php': ['prettier']}
-" let g:ale_java_google_java_format_options = '--aosp'
-
-" tab
-" nnoremap <C-H> :tabprevious<CR>
-" nnoremap <C-L> :tabnext<CR>
 
 " quickrun
 let g:quickrun_config = {}
@@ -144,21 +125,13 @@ function! LightlineConnection()
   return exists(':DB_listOption') ? DB_listOption('profile') : (100 * line('.') / line('$')) . '%'
 endfunction
 
-" ctrlp
-let g:ctrlp_cmd = 'CtrlPMRU'
-let g:ctrlp_working_path_mode = 'ra'
-let g:ctrlp_switch_buffer = 'et'
-let g:ctrlp_user_command = 'rg --files --color=never %s'
-let g:ctrlp_match_window = 'bottom,btt,min:1,max:10,results:100'
-" let g:ctrlp_mruf_exclude = '^\/'
-let g:ctrlp_prompt_mappings = { 'PrtInsert()': ['<c-\>', '<c-q>'] }
-nnoremap [ctrlp] <Nop>
-nmap <space> [ctrlp]
-nnoremap <silent> [ctrlp]f :CtrlPCurFile<CR>
-nnoremap <silent> [ctrlp]w :CtrlPCurWD<CR>
-nnoremap <silent> [ctrlp]g :CtrlPRoot<CR>
-nnoremap <silent> [ctrlp]m :CtrlPMRU<CR>
-nnoremap <silent> [ctrlp]b :CtrlPBuffer<CR>
+" fzf
+nnoremap [fzf] <Nop>
+nmap <space> [fzf]
+nnoremap <silent> [fzf]f :Files<CR>
+nnoremap <silent> [fzf]g :GFiles<CR>
+nnoremap <silent> [fzf]m :History<CR>
+nnoremap <silent> [fzf]b :Buffers<CR>
 
 " asyncomplete
 let g:asyncomplete_remove_duplicates = 1
@@ -195,7 +168,7 @@ augroup lsp_install
 augroup END
 
 " lsp:golang
-if has('gui_running') && executable('gopls')
+if executable('gopls')
   autocmd User lsp_setup call lsp#register_server({
     \ 'name': 'gopls',
     \ 'cmd': {server_info->['gopls', '-mode', 'stdio']},
@@ -235,7 +208,7 @@ endif
 " endif
 
 " lsp:python
-if has('gui_running') && executable('pyls')
+if executable('pyls')
   augroup pylsp
     autocmd User lsp_setup call lsp#register_server({
       \ 'name': 'pyls',
@@ -247,32 +220,6 @@ if has('gui_running') && executable('pyls')
       \ })
   augroup END
 endif
-
-" vsnip
-" if has('gui_running')
-"   let g:completion_enable_snippet = 'vim-vsnip'
-"   let g:vsnip_extra_mapping = v:true
-" 
-"   imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
-"   smap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
-"   
-"   imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
-"   smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
-"   
-"   imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
-"   smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
-"   imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
-"   smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
-"   
-"   nmap        s   <Plug>(vsnip-select-text)
-"   xmap        s   <Plug>(vsnip-select-text)
-"   nmap        S   <Plug>(vsnip-cut-text)
-"   xmap        S   <Plug>(vsnip-cut-text)
-"   
-"   let g:vsnip_filetypes = {}
-"   let g:vsnip_filetypes.javascriptreact = ['javascript']
-"   let g:vsnip_filetypes.typescriptreact = ['typescript']
-" endif
 
 " tweak diff colors
 highlight DiffAdd    cterm=bold ctermfg=10 ctermbg=22
