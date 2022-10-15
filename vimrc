@@ -149,19 +149,35 @@ vnoremap <silent> <Leader>tu :<C-u>'<,'>!perl -lne "@F = split(/ *\x7c */); prin
 
 " status
 set laststatus=2
-let g:lightline = { 'active': { 'right': [ ['lineinfo'], ['connection'], ['fileformat', 'fileencoding', 'filetype'] ] } }
+let g:lightline = {
+  \   'active': {
+  \     'right': [ ['lineinfo'], ['connection'], ['fileformat', 'fileencoding', 'filetype'] ]
+  \   }
+  \ }
 let g:lightline.component_function = { 'connection': 'LightlineConnection' }
 function! LightlineConnection()
   return exists(':DB_listOption') ? DB_listOption('profile') : (100 * line('.') / line('$')) . '%'
 endfunction
 
-" fzf
-nnoremap [fzf] <Nop>
-nmap <space> [fzf]
-nnoremap <silent> [fzf]f :Files<CR>
-nnoremap <silent> [fzf]g :GFiles<CR>
-nnoremap <silent> [fzf]m :History<CR>
-nnoremap <silent> [fzf]b :Buffers<CR>
+" ctrlp
+let g:ctrlp_map = '<Nop>'
+let g:ctrlp_cmd = 'CtrlPMRU'
+let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_switch_buffer = 'et'
+" let g:ctrlp_user_command = 'rg --files --color=never %s'
+let g:ctrlp_match_window = 'bottom,btt,min:1,max:10,results:100'
+" let g:ctrlp_mruf_exclude = '^\/'
+" let g:ctrlp_prompt_mappings = { 'PrtInsert()': ['<c-\>', '<c-q>'] }
+nnoremap [ctrlp] <Nop>
+nmap <space> [ctrlp]
+nnoremap <silent> [ctrlp]f :<C-u>CtrlPCurFile<CR>
+nnoremap <silent> [ctrlp]w :<C-u>CtrlPCurWD<CR>
+nnoremap <silent> [ctrlp]g :<C-u>CtrlPRoot<CR>
+nnoremap <silent> [ctrlp]m :<C-u>CtrlPMRU<CR>
+nnoremap <silent> [ctrlp]b :<C-u>CtrlPBuffer<CR>
+
+" fern
+nnoremap <silent> [ctrlp]e :<C-u>Fern .<CR>
 
 " asyncomplete
 let g:asyncomplete_remove_duplicates = 1
@@ -171,26 +187,30 @@ let g:asyncomplete_auto_popup = 1
 " lsp
 " let g:lsp_preview_float = 1
 " let g:lsp_signature_help_enabled = 0
-" let g:lsp_diagnostics_enabled = 0
+let g:lsp_diagnostics_enabled = 1
 " let g:lsp_log_verbose = 1
 " let g:lsp_log_file = expand('~/.vim/vim-lsp.log')
+let g:lsp_diagnostics_virtual_text_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
 function! s:on_lsp_buffer_enabled() abort
   setlocal omnifunc=lsp#complete
   setlocal signcolumn=yes
   if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
   nmap <buffer> gd <plug>(lsp-definition)
+  nmap <buffer> gD :tab LspDefinition<CR>
   nmap <buffer> gs <plug>(lsp-document-symbol-search)
   nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
   nmap <buffer> gr <plug>(lsp-reference)
   nmap <buffer> gi <plug>(lsp-implementation)
   nmap <buffer> gy <plug>(lsp-type-definition)
-  nmap <buffer> gc <plug>(lsp-document-diagnostics)
   nmap <buffer> [g <plug>(lsp-previous-diagnostic)
   nmap <buffer> ]g <plug>(lsp-next-diagnostic)
   nmap <buffer> K <plug>(lsp-hover)
 
   let g:lsp_format_sync_timeout = 1000
+
+  nmap <buffer> gc <plug>(lsp-declaration)
+  nmap <buffer> gn <plug>(lsp-document-diagnostics)
 endfunction
 augroup lsp_install
   au!
@@ -248,11 +268,12 @@ nnoremap <silent> <Leader>\ :let @+ = expand("%:p")<CR>
 """"""""""
 " exec 'source ~/.vim/autoload/plug.vim'
 "
-" func! LcdAndRg(path)
-"   let l:keyword = input('input keyword to search under ' . a:path . ': ')
+" ripgrep
+" function! LcdAndRg(path)
+"   let l:keyword = input('Enter keyword to search for ' . a:path . ': ')
 "   exec 'lcd' a:path '|' 'Rg' l:keyword
-" endfunc
-" nnoremap <silent> [ctrlp]lc :call LcdAndRg('~/projects')<CR>
+" endfunction
+" nnoremap <silent> <Leader>gp :<C-u>call LcdAndRg('~/projects')<CR>
 
 " dbext
 " let g:dbext_default_history_file = expand('~/.vim/tmp/dbext_sql_history.txt')
