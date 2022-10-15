@@ -2,8 +2,7 @@
 " curl -fLo plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 " mkdir ~/.vim/plugged ~/.vim/tmp
 
-call plug#begin('~/.vim/plugged')
-
+call plug#begin()
 Plug 'thinca/vim-quickrun'
 Plug 'AndrewRadev/linediff.vim'
 Plug 'itchyny/lightline.vim'
@@ -17,9 +16,12 @@ Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'prabirshrestha/vim-lsp'
-source $VIMRUNTIME/macros/matchit.vim
-
+Plug 'hrsh7th/vim-vsnip'
+Plug 'hrsh7th/vim-vsnip-integ'
+Plug 'lambdalisue/fern.vim'
 call plug#end()
+
+source $VIMRUNTIME/macros/matchit.vim
 
 
 " backup
@@ -178,9 +180,9 @@ if executable('gopls')
   augroup gopls
     autocmd!
     autocmd User lsp_setup call lsp#register_server({
-      \ 'name': 'gopls',
-      \ 'cmd': {server_info->['gopls', '-mode', 'stdio']},
-      \ 'whitelist': ['go'],
+      \   'name': 'gopls',
+      \   'cmd': {server_info->['gopls']},
+      \   'whitelist': ['go'],
       \ })
     autocmd BufWritePre *.go LspDocumentFormatSync
   augroup END
@@ -192,17 +194,17 @@ if executable('pylsp')
   augroup pylsp
     autocmd!
     autocmd User lsp_setup call lsp#register_server({
-      \ 'name': 'pylsp',
-      \ 'cmd': { server_info -> ['pylsp'] },
-      \ 'allowlist': ['python'],
-      \ 'workspace_config': { 'pylsp': {
-      \   'configurationSources': ['flake8'],
-      \   'plugins': {
-      \     'black': { 'enabled': v:true, 'line_length': 119 },
-      \     'flake8': { 'enabled': v:true, 'maxLineLength': 119 },
-      \     'pylsp_mypy': { 'enabled': v:true }
-      \   }
-      \ }}
+      \   'name': 'pylsp',
+      \   'cmd': {server_info -> ['pylsp']},
+      \   'allowlist': ['python'],
+      \   'workspace_config': {'pylsp': {
+      \     'configurationSources': ['flake8'],
+      \     'plugins': {
+      \       'black': {'enabled': v:true, 'line_length': 119},
+      \       'flake8': {'enabled': v:true, 'maxLineLength': 119},
+      \       'pylsp_mypy': {'enabled': v:true}
+      \     }
+      \   }}
       \ })
     autocmd BufWritePre *.py LspDocumentFormatSync
   augroup END
