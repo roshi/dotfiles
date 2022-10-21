@@ -228,7 +228,7 @@ if executable('gopls')
       \   'cmd': {server_info->['gopls']},
       \   'whitelist': ['go'],
       \ })
-    autocmd BufWritePre *.go LspDocumentFormatSync
+    autocmd BufWritePre *.go call execute(['LspCodeActionSync source.organizeImports', 'LspDocumentFormatSync'])
   augroup END
 endif
 
