@@ -8,6 +8,7 @@ if has('mac')
 endif
 
 " gvim
+set ambiwidth=double
 set lines=55 columns=150
 set guioptions-=T
 set guioptions-=m
