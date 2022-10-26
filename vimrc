@@ -2,7 +2,7 @@
 " curl -fLo plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 " mkdir ~/.vim/plugged ~/.vim/tmp
 
-call plug#begin()
+call plug#begin('~/.vim/plugged')
 Plug 'thinca/vim-quickrun'
 Plug 'AndrewRadev/linediff.vim'
 Plug 'itchyny/lightline.vim'
@@ -19,6 +19,9 @@ Plug 'prabirshrestha/vim-lsp'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
 Plug 'lambdalisue/fern.vim'
+if exists('*g:LoadPlug')
+  call g:LoadPlug()
+endif
 call plug#end()
 
 source $VIMRUNTIME/macros/matchit.vim
