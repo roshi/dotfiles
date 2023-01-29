@@ -19,6 +19,9 @@ Plug 'prabirshrestha/vim-lsp'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
 Plug 'lambdalisue/fern.vim'
+if exists('*g:LoadPlug')
+  call g:LoadPlug()
+endif
 call plug#end()
 
 source $VIMRUNTIME/macros/matchit.vim
@@ -167,7 +170,7 @@ let g:ctrlp_switch_buffer = 'et'
 " let g:ctrlp_user_command = 'rg --files --color=never %s'
 let g:ctrlp_match_window = 'bottom,btt,min:1,max:10,results:100'
 " let g:ctrlp_mruf_exclude = '^\/'
-" let g:ctrlp_prompt_mappings = { 'PrtInsert()': ['<c-\>', '<c-q>'] }
+let g:ctrlp_prompt_mappings = { 'PrtInsert()': ['<F8>'] }
 nnoremap [ctrlp] <Nop>
 nmap <space> [ctrlp]
 nnoremap <silent> [ctrlp]f :<C-u>CtrlPCurFile<CR>

@@ -2,4 +2,14 @@
 
 alias ll='ls -al --color'
 
+_fzf_complete_git() {
+  if [[ "$@" == "git switch "* || "$@" == "git checkout "* ]];then
+    _fzf_complete --reverse --multi -- "$@" < <(
+      git branch --format "%(refname:short)"
+    )
+  else
+    eval "zle ${fzf_default_completion:-expand-or-complete}"
+  fi
+}
+
 #vim: set ft=sh
