@@ -96,6 +96,7 @@ set fileencodings=utf-8,cp932
 
 " misc
 set belloff=all
+set modelines=1
 
 " tab/buffer
 nnoremap <C-n> :tabnext<CR>
@@ -167,14 +168,13 @@ let g:ctrlp_map = '<Nop>'
 let g:ctrlp_cmd = 'CtrlPMRU'
 let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_switch_buffer = 'et'
-" let g:ctrlp_user_command = 'rg --files --color=never %s'
+let g:ctrlp_max_files = 0
 let g:ctrlp_match_window = 'bottom,btt,min:1,max:10,results:100'
 " let g:ctrlp_mruf_exclude = '^\/'
-let g:ctrlp_prompt_mappings = { 'PrtInsert()': ['<F8>'] }
+let g:ctrlp_prompt_mappings = { 'PrtInsert()': ['<c-Bslash>', '<F3>'] }
 nnoremap [ctrlp] <Nop>
 nmap <space> [ctrlp]
 nnoremap <silent> [ctrlp]f :<C-u>CtrlPCurFile<CR>
-nnoremap <silent> [ctrlp]w :<C-u>CtrlPCurWD<CR>
 nnoremap <silent> [ctrlp]g :<C-u>CtrlPRoot<CR>
 nnoremap <silent> [ctrlp]m :<C-u>CtrlPMRU<CR>
 nnoremap <silent> [ctrlp]b :<C-u>CtrlPBuffer<CR>
@@ -194,6 +194,8 @@ let g:lsp_diagnostics_enabled = 1
 " let g:lsp_log_verbose = 1
 " let g:lsp_log_file = expand('~/.vim/vim-lsp.log')
 let g:lsp_diagnostics_virtual_text_enabled = 1
+let g:lsp_diagnostics_virtual_text_align = 'right'
+let g:lsp_diagnostics_virtual_text_wrap = 'truncate'
 let g:lsp_inlay_hints_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
 function! s:on_lsp_buffer_enabled() abort
@@ -229,7 +231,7 @@ if executable('gopls')
     autocmd User lsp_setup call lsp#register_server({
       \   'name': 'gopls',
       \   'cmd': {server_info->['gopls']},
-      \   'whitelist': ['go'],
+      \   'allowlist': ['go'],
       \ })
     autocmd BufWritePre *.go call execute(['LspCodeActionSync source.organizeImports', 'LspDocumentFormatSync'])
   augroup END
@@ -247,9 +249,9 @@ if executable('pylsp')
       \   'workspace_config': {'pylsp': {
       \     'configurationSources': ['flake8'],
       \     'plugins': {
-      \       'pycodestyle': { 'enabled': v:true },
-      \       'black': {'enabled': v:true, 'line_length': 119},
-      \       'flake8': {'enabled': v:true, 'maxLineLength': 119, 'executable': 'pflake8'},
+      \       'pycodestyle': {'enabled': v:true},
+      \       'black': {'enabled': v:true},
+      \       'flake8': {'enabled': v:true},
       \       'pylsp_mypy': {'enabled': v:true}
       \     }
       \   }}
@@ -265,22 +267,7 @@ highlight DiffChange cterm=bold ctermfg=10 ctermbg=17
 highlight DiffText   cterm=bold ctermfg=10 ctermbg=21
 
 " copy path to clipboard
-nnoremap <silent> <Leader>\ :let @+ = expand("%:p")<CR>
+nnoremap <silent> <Leader><Char-0x5c> :let @+ = expand("%:p")<CR>
 
-
-""""""""""
-" local-scope .vimrc
-""""""""""
-" exec 'source ~/.vim/autoload/plug.vim'
-"
-" ripgrep
-" function! LcdAndRg(path)
-"   let l:keyword = input('Enter keyword to search for ' . a:path . ': ')
-"   exec 'lcd' a:path '|' 'Rg' l:keyword
-" endfunction
-" nnoremap <silent> <Leader>gp :<C-u>call LcdAndRg('~/projects')<CR>
-
-" dbext
-" let g:dbext_default_history_file = expand('~/.vim/tmp/dbext_sql_history.txt')
-" let g:dbext_default_profile_LOCAL = 'type=MYSQL:user=root:passwd=:dbname=mysql:host=localhost'
-" let g:dbext_default_profile = 'None'
+" search selected word
+vnoremap * y/\V<C-R>=escape(@", '/\')<CR><CR>

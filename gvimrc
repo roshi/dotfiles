@@ -15,7 +15,10 @@ set guioptions-=m
 set guioptions-=L
 set title
 hi CursorLine gui=underline guibg=NONE
-map ¥ <leader>
+map <Char-0xa5> <leader>
+
+" copy path to clipboard
+nnoremap <silent> <Leader><Char-0xa5> :let @+ = expand("%:p")<CR>
 
 " editexisting
 source $VIMRUNTIME/macros/editexisting.vim
