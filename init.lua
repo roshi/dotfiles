@@ -4,8 +4,16 @@ require('packer').startup(function(use)
   use 'AndrewRadev/linediff.vim'
   use 'dracula/vim'
   use 'thinca/vim-quickrun'
+  use 'tpope/vim-dadbod'
+  use {
+    'nvim-lualine/lualine.nvim',
+    requires = {'nvim-tree/nvim-web-devicons', opt = true}
+  }
+  use {
+    'nvim-telescope/telescope.nvim', tag = '0.1.1',
+    requires = {'nvim-lua/plenary.nvim'}
+  }
 end)
-
 
 -- backup
 vim.opt.directory = '~/.cache/nvim'
@@ -14,7 +22,7 @@ vim.opt.undodir = '~/.cache/nvim'
 
 -- filetype
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = {'sql'},
+  pattern = {'sql', 'lua'},
   command = 'set softtabstop=2 | set shiftwidth=2 | set expandtab'
 })
 vim.api.nvim_create_autocmd('FileType', {
@@ -95,11 +103,31 @@ vim.keymap.set('v', '<Leader>R', ":<C-u>'<,'>QuickRun sh<CR>", {noremap = true, 
 
 -- dbext
 
--- vim-table-mode
+-- status/lualine
+vim.opt.laststatus = 2
+-- vim.g.lightline = {active = {right = [['lineinfo'], ['connection'], ['fileformat', 'fileencoding', 'filetype']]}}
+local function DbConnection()
+  return "XXX"
+end
+require('lualine').setup {
+  options = {
+    icons_enabled = false,
+    theme = 'dracula',
+    component_separators = '',
+    section_separators = '',
+  },
+  sections = {
+    lualine_c = {{'filename', path = l}},
+    lualine_y = {DbConnection},
+  }
+}
 
--- status
-
--- ctrlp
+-- telescope
+local telescope = require('telescope')
+local tsBuiltin = require('telescope.builtin')
+vim.keymap.set('n', '<Space>f', tsBuiltin.find_files, {})
+vim.keymap.set('n', '<Space>b', tsBuiltin.buffers, {})
+-- vim.keymap.set('n', '', telescope.live_grep, {})
 
 -- fern
 

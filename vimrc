@@ -166,9 +166,9 @@ endfunction
 " ctrlp
 let g:ctrlp_map = '<Nop>'
 let g:ctrlp_cmd = 'CtrlPMRU'
-let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_working_path_mode = 'wa'
 let g:ctrlp_switch_buffer = 'et'
-let g:ctrlp_max_files = 0
+" let g:ctrlp_max_files = 999
 let g:ctrlp_match_window = 'bottom,btt,min:1,max:10,results:100'
 " let g:ctrlp_mruf_exclude = '^\/'
 let g:ctrlp_prompt_mappings = { 'PrtInsert()': ['<c-Bslash>', '<F3>'] }
@@ -190,7 +190,7 @@ let g:asyncomplete_auto_popup = 1
 " lsp
 " let g:lsp_preview_float = 1
 " let g:lsp_signature_help_enabled = 0
-let g:lsp_diagnostics_enabled = 1
+" let g:lsp_diagnostics_enabled = 1
 " let g:lsp_log_verbose = 1
 " let g:lsp_log_file = expand('~/.vim/vim-lsp.log')
 let g:lsp_diagnostics_virtual_text_enabled = 1
