@@ -5,6 +5,7 @@ require('packer').startup(function(use)
   use 'dracula/vim'
   use 'thinca/vim-quickrun'
   use 'tpope/vim-dadbod'
+  use 'lambdalisue/fern.vim'
   use {
     'nvim-lualine/lualine.nvim',
     requires = {'nvim-tree/nvim-web-devicons', opt = true}
@@ -13,7 +14,9 @@ require('packer').startup(function(use)
     'nvim-telescope/telescope.nvim', tag = '0.1.1',
     requires = {'nvim-lua/plenary.nvim'}
   }
+  use 'neovim/nvim-lspconfig'
 end)
+
 
 -- backup
 vim.opt.directory = '~/.cache/nvim'
@@ -30,7 +33,7 @@ vim.api.nvim_create_autocmd('FileType', {
   command = 'nnoremap <buffer> q :<C-u>q<CR>'
 })
 
--- dracula
+-- colorscheme
 vim.g.dracula_italic = false
 vim.cmd.colorscheme('dracula')
 
@@ -90,22 +93,21 @@ vim.opt.fileencodings = 'UTF-8,cp932'
 vim.opt.belloff = 'all'
 vim.opt.modelines = 1
 
--- tab/buffer
+-- buffer
 vim.keymap.set('n', '<C-n>', ':tabnext<CR>', {noremap = true})
 vim.keymap.set('n', '<C-p>', ':tabprevious<CR>', {noremap = true})
 vim.keymap.set('n', '<C-j>', ':bnext<CR>', {noremap = true})
 vim.keymap.set('n', '<C-k>', ':bprevious<CR>', {noremap = true})
 
--- quickrun
+-- runner
 vim.g.quickrun_config = {['_'] = {['outputter/buffer/opener'] = 'split'}}
 vim.keymap.set('n', '<Leader>R', ':<C-u>Quickrun sh<CR>', {noremap = true, silent = true})
 vim.keymap.set('v', '<Leader>R', ":<C-u>'<,'>QuickRun sh<CR>", {noremap = true, silent = true})
 
 -- dbext
 
--- status/lualine
+-- status
 vim.opt.laststatus = 2
--- vim.g.lightline = {active = {right = [['lineinfo'], ['connection'], ['fileformat', 'fileencoding', 'filetype']]}}
 local function DbConnection()
   return "XXX"
 end
@@ -114,28 +116,65 @@ require('lualine').setup {
     icons_enabled = false,
     theme = 'dracula',
     component_separators = '',
-    section_separators = '',
+    section_separators = ''
   },
   sections = {
-    lualine_c = {{'filename', path = l}},
-    lualine_y = {DbConnection},
+    lualine_y = {DbConnection}
   }
 }
 
--- telescope
-local telescope = require('telescope')
+-- finder
 local tsBuiltin = require('telescope.builtin')
 vim.keymap.set('n', '<Space>f', tsBuiltin.find_files, {})
+vim.keymap.set('n', '<Space>g', tsBuiltin.git_files, {})
+vim.keymap.set('n', '<Space>m', tsBuiltin.oldfiles, {})
 vim.keymap.set('n', '<Space>b', tsBuiltin.buffers, {})
--- vim.keymap.set('n', '', telescope.live_grep, {})
 
--- fern
-
--- acyncomplete
+-- explorer
+vim.keymap.set('n', '<Space>e', ':<C-u>Fern .<CR>', {})
 
 -- lsp
+local lspConfig = require('lspconfig')
+local lspUtil = require('lspconfig.util')
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+  callback = function(args)
+    local bufnr = args.buf
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client.server_capabilities.completionProvider then
+      vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
+    end
+    if client.server_capabilities.definitionProvider then
+      vim.bo[bufnr].tagfunc = 'v:lua.vim.lsp.tagfunc'
+    end
+  end
+})
+lspConfig.gopls.setup({
+  on_attach = function(client, bufnr)
+    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+  end
+})
 
 -- lsp:golang
+lspConfig.gopls.setup {
+  cmd = {'gopls', 'serve'},
+  filetypes = {'go', 'gomod'},
+  root_dir = lspUtil.root_pattern('go.work', 'go.mod', '.git'),
+  settings = {
+    gopls = {
+      analyses = {
+        unsedparams = true
+      },
+      staticcheck = true
+    }
+  }
+}
+vim.api.nvim_create_autocmd('BufWritePre', {
+  pattern = '*.go',
+  callback = function()
+    vim.lsp.buf.code_action({context = {only = {'source.organizaImports'}}, apply = true})
+  end
+})
 
 -- lsp:python
 
