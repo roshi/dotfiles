@@ -124,56 +124,46 @@ require('lualine').setup {
 }
 
 -- finder
-local tsBuiltin = require('telescope.builtin')
-vim.keymap.set('n', '<Space>f', tsBuiltin.find_files, {})
-vim.keymap.set('n', '<Space>g', tsBuiltin.git_files, {})
-vim.keymap.set('n', '<Space>m', tsBuiltin.oldfiles, {})
-vim.keymap.set('n', '<Space>b', tsBuiltin.buffers, {})
+local tsbuiltin = require('telescope.builtin')
+vim.keymap.set('n', '<Space>f', tsbuiltin.find_files, {})
+vim.keymap.set('n', '<Space>g', tsbuiltin.git_files, {})
+vim.keymap.set('n', '<Space>m', tsbuiltin.oldfiles, {})
+vim.keymap.set('n', '<Space>b', tsbuiltin.buffers, {})
 
 -- explorer
 vim.keymap.set('n', '<Space>e', ':<C-u>Fern .<CR>', {})
 
 -- lsp
-local lspConfig = require('lspconfig')
-local lspUtil = require('lspconfig.util')
+local lspconfig = require('lspconfig')
+local lsputil = require('lspconfig.util')
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('UserLspConfig', {}),
-  callback = function(args)
-    local bufnr = args.buf
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if client.server_capabilities.completionProvider then
-      vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
-    end
-    if client.server_capabilities.definitionProvider then
-      vim.bo[bufnr].tagfunc = 'v:lua.vim.lsp.tagfunc'
-    end
+  callback = function(ev)
+    vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+
+    local opts = {noremap = true, silent = true, buffer = ev.buf}
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
   end
 })
-lspConfig.gopls.setup({
-  on_attach = function(client, bufnr)
-    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+local onattach = function(client, bufnr)
+  if client.server_capabilities.documentFormattingProvider then
+    vim.api.nvim_create_autocmd('BufWritePre', {
+      group = vim.api.nvim_create_augroup('Format', {clear = true}),
+      buffer = bufnr,
+      callback = function()
+        vim.lsp.buf.format()
+      end
+    })
   end
-})
+end
 
 -- lsp:golang
-lspConfig.gopls.setup {
-  cmd = {'gopls', 'serve'},
-  filetypes = {'go', 'gomod'},
-  root_dir = lspUtil.root_pattern('go.work', 'go.mod', '.git'),
-  settings = {
-    gopls = {
-      analyses = {
-        unsedparams = true
-      },
-      staticcheck = true
-    }
-  }
-}
-vim.api.nvim_create_autocmd('BufWritePre', {
-  pattern = '*.go',
-  callback = function()
-    vim.lsp.buf.code_action({context = {only = {'source.organizaImports'}}, apply = true})
-  end
+lspconfig.gopls.setup({
+  on_attach = onattach,
 })
 
 -- lsp:python
