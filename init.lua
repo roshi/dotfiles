@@ -19,9 +19,9 @@ end)
 
 
 -- backup
-vim.opt.directory = '~/.cache/nvim'
-vim.opt.backupdir = '~/.cache/nvim'
-vim.opt.undodir = '~/.cache/nvim'
+-- vim.opt.directory = '~/.cache/nvim'
+-- vim.opt.backupdir = '~/.cache/nvim'
+-- vim.opt.undodir = '~/.cache/nvim'
 
 -- filetype
 vim.api.nvim_create_autocmd('FileType', {
@@ -81,7 +81,7 @@ vim.opt.display = 'lastline,uhex'
 vim.opt.foldlevel = 99
 vim.opt.splitbelow = true
 vim.opt.cursorline = true
-vim.api.nvim_command('highlight CursorLine cterm=underline ctermfg=NONE ctermbg=NONE')
+vim.api.nvim_command('highlight CursorLine cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE guisp=Gray50')
 
 -- encoding
 vim.opt.termencoding = 'UTF-8'
