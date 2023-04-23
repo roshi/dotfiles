@@ -15,6 +15,9 @@ require('packer').startup(function(use)
     requires = {'nvim-lua/plenary.nvim'}
   }
   use 'neovim/nvim-lspconfig'
+  if vim.fn.exists('LoadPlug') then
+    LoadPlug(use)
+  end
 end)
 
 
@@ -104,13 +107,10 @@ vim.g.quickrun_config = {['_'] = {['outputter/buffer/opener'] = 'split'}}
 vim.keymap.set('n', '<Leader>R', ':<C-u>Quickrun sh<CR>', {noremap = true, silent = true})
 vim.keymap.set('v', '<Leader>R', ":<C-u>'<,'>QuickRun sh<CR>", {noremap = true, silent = true})
 
--- dbext
+-- database
 
 -- status
 vim.opt.laststatus = 2
-local function DbConnection()
-  return "XXX"
-end
 require('lualine').setup {
   options = {
     icons_enabled = false,
@@ -119,7 +119,9 @@ require('lualine').setup {
     section_separators = ''
   },
   sections = {
-    lualine_y = {DbConnection}
+    lualine_y = {function()
+      return 'XXX'
+    end}
   }
 }
 
@@ -135,7 +137,6 @@ vim.keymap.set('n', '<Space>e', ':<C-u>Fern .<CR>', {})
 
 -- lsp
 local lspconfig = require('lspconfig')
-local lsputil = require('lspconfig.util')
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('UserLspConfig', {}),
   callback = function(ev)
@@ -144,26 +145,25 @@ vim.api.nvim_create_autocmd('LspAttach', {
     local opts = {noremap = true, silent = true, buffer = ev.buf}
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
     vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
     vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
   end
 })
-local onattach = function(client, bufnr)
-  if client.server_capabilities.documentFormattingProvider then
-    vim.api.nvim_create_autocmd('BufWritePre', {
-      group = vim.api.nvim_create_augroup('Format', {clear = true}),
-      buffer = bufnr,
-      callback = function()
-        vim.lsp.buf.format()
-      end
-    })
-  end
-end
 
 -- lsp:golang
 lspconfig.gopls.setup({
-  on_attach = onattach,
+  on_attach = function(client, bufnr)
+    if client.server_capabilities.documentFormattingProvider then
+      vim.api.nvim_create_autocmd('BufWritePre', {
+        group = vim.api.nvim_create_augroup('Format', {clear = true}),
+        buffer = bufnr,
+        callback = function()
+          vim.lsp.buf.format()
+        end
+      })
+    end
+  end,
 })
 
 -- lsp:python
