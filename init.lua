@@ -15,9 +15,6 @@ require('packer').startup(function(use)
     requires = {'nvim-lua/plenary.nvim'}
   }
   use 'neovim/nvim-lspconfig'
-  if vim.fn.exists('LoadPlug') then
-    LoadPlug(use)
-  end
 end)
 
 
