@@ -123,6 +123,11 @@ require('lualine').setup {
 }
 
 -- finder
+require('telescope').setup {
+  defaults = {
+    layout_strategy = 'vertical',
+  }
+}
 local tsbuiltin = require('telescope.builtin')
 vim.keymap.set('n', '<Space>f', tsbuiltin.find_files, {})
 vim.keymap.set('n', '<Space>g', tsbuiltin.git_files, {})
@@ -149,7 +154,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 
 -- lsp:golang
-lspconfig.gopls.setup({
+lspconfig.gopls.setup {
   on_attach = function(client, bufnr)
     if client.server_capabilities.documentFormattingProvider then
       vim.api.nvim_create_autocmd('BufWritePre', {
@@ -161,7 +166,7 @@ lspconfig.gopls.setup({
       })
     end
   end,
-})
+}
 
 -- lsp:python
 
