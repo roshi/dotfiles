@@ -5,7 +5,6 @@ require('packer').startup(function(use)
   use 'dracula/vim'
   use 'thinca/vim-quickrun'
   use 'tpope/vim-dadbod'
-  use 'lambdalisue/fern.vim'
   use {
     'nvim-lualine/lualine.nvim',
     requires = {'nvim-tree/nvim-web-devicons', opt = true}
@@ -14,7 +13,15 @@ require('packer').startup(function(use)
     'nvim-telescope/telescope.nvim', tag = '0.1.1',
     requires = {'nvim-lua/plenary.nvim'}
   }
+  use {
+    'nvim-telescope/telescope-file-browser.nvim',
+    requires = {'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim'}
+  }
   use 'neovim/nvim-lspconfig'
+  use 'hrsh7th/cmp-nvim-lsp'
+  use 'hrsh7th/nvim-cmp'
+  use 'hrsh7th/cmp-vsnip'
+  use 'hrsh7th/vim-vsnip'
 end)
 
 
@@ -81,6 +88,7 @@ vim.opt.display = 'lastline,uhex'
 vim.opt.foldlevel = 99
 vim.opt.splitbelow = true
 vim.opt.cursorline = true
+vim.opt.linespace = 1
 vim.api.nvim_command('highlight CursorLine cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE guisp=Gray50')
 
 -- encoding
@@ -108,26 +116,35 @@ vim.keymap.set('v', '<Leader>R', ":<C-u>'<,'>QuickRun sh<CR>", {noremap = true, 
 
 -- status
 vim.opt.laststatus = 2
-require('lualine').setup {
+require('lualine').setup({
   options = {
-    icons_enabled = false,
     theme = 'dracula',
-    component_separators = '',
-    section_separators = ''
+    icons_enabled = true,
+    -- component_separators = '',
+    -- section_separators = ''
   },
   sections = {
     lualine_y = {function()
       return 'XXX'
     end}
   }
-}
+})
 
 -- finder
-require('telescope').setup {
+local telescope = require('telescope')
+telescope.setup({
   defaults = {
-    layout_strategy = 'vertical',
+    -- layout_strategy = 'vertical',
+    borderchars = {'─', '│', '─', '│', '┌', '┐', '┘', '└'},
+  },
+  extension = {
+    file_browser = {
+      theme = 'ivy',
+      hijack_netrw = true,
+    }
   }
-}
+})
+telescope.load_extension 'file_browser'
 local tsbuiltin = require('telescope.builtin')
 vim.keymap.set('n', '<Space>f', tsbuiltin.find_files, {})
 vim.keymap.set('n', '<Space>g', tsbuiltin.git_files, {})
@@ -135,7 +152,28 @@ vim.keymap.set('n', '<Space>m', tsbuiltin.oldfiles, {})
 vim.keymap.set('n', '<Space>b', tsbuiltin.buffers, {})
 
 -- explorer
-vim.keymap.set('n', '<Space>e', ':<C-u>Fern .<CR>', {})
+vim.keymap.set('n', '<Space>e', ':<C-u>Telescope file_browser<CR>', {})
+
+-- completion
+local cmp = require('cmp')
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      vim.fn['vsnip#anonymous'](args.body)
+    end,
+  },
+  mapping = cmp.mapping.preset.insert({
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ['<CR>'] = cmp.mapping.confirm({select = true}),
+  }),
+  sources = cmp.config.sources({
+    {name = 'nvim_lsp'},
+    {name = 'vsnip'},
+  })
+})
 
 -- lsp
 local lspconfig = require('lspconfig')
@@ -154,7 +192,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 
 -- lsp:golang
-lspconfig.gopls.setup {
+lspconfig.gopls.setup({
   on_attach = function(client, bufnr)
     if client.server_capabilities.documentFormattingProvider then
       vim.api.nvim_create_autocmd('BufWritePre', {
@@ -166,9 +204,10 @@ lspconfig.gopls.setup {
       })
     end
   end,
-}
+})
 
 -- lsp:python
+lspconfig.pyright.setup({})
 
 -- tweak diff colors
 
