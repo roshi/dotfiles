@@ -135,7 +135,7 @@ local telescope = require('telescope')
 telescope.setup({
   defaults = {
     -- layout_strategy = 'vertical',
-    borderchars = {'─', '│', '─', '│', '┌', '┐', '┘', '└'},
+    -- borderchars = {'─', '│', '─', '│', '┌', '┐', '┘', '└'},
   },
   extension = {
     file_browser = {

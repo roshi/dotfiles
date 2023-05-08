@@ -1,9 +1,9 @@
 set mouse=a
-set linespace=3
+set linespace=0
 set signcolumn=yes
 
 if exists(':GuiFont')
-  GuiFont! RobotoMono\ Nerd\ Font\ Mono:h12
+  GuiFont! MesloLGM\ Nerd\ Font\ Mono:h12
 endif
 
 if exists(':GuiTabline')
