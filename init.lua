@@ -150,8 +150,6 @@ vim.keymap.set('n', '<Space>f', tsbuiltin.find_files, {})
 vim.keymap.set('n', '<Space>g', tsbuiltin.git_files, {})
 vim.keymap.set('n', '<Space>m', tsbuiltin.oldfiles, {})
 vim.keymap.set('n', '<Space>b', tsbuiltin.buffers, {})
-
--- explorer
 vim.keymap.set('n', '<Space>e', ':<C-u>Telescope file_browser<CR>', {})
 
 -- completion

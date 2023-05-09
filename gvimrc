@@ -1,9 +1,9 @@
 set iminsert=0
 set imsearch=0
+set linespace=0
 
 if has('mac')
-  set guifont=MesloLGM_Nerd_Font_Mono:h12:cANSI:qDRAFT
-  set linespace=0
+  set guifont=MesloLGMNFM-Regular:h12,Menlo:h12
 endif
 
 " gvim
