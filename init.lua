@@ -113,6 +113,18 @@ vim.keymap.set('n', '<Leader>R', ':<C-u>Quickrun sh<CR>', {noremap = true, silen
 vim.keymap.set('v', '<Leader>R', ":<C-u>'<,'>QuickRun sh<CR>", {noremap = true, silent = true})
 
 -- database
+-- vim.g.dadbod_manage_dbext = 0
+vim.keymap.set('n', '<Leader>sbp', function()
+  vim.ui.select({}, {
+    prompt = 'Select dbext profile',
+  }, function(prof)
+    vim.g.dbext_default_profile = prof
+  end)
+end, {noremap = true, silent = true})
+vim.api.nvim_create_autocmd('BufReadPost', {
+  pattern = {'*.dbout'},
+  command = 'nnoremap <buffer> q :<C-u>q<CR>'
+})
 
 -- status
 vim.opt.laststatus = 2
@@ -125,7 +137,7 @@ require('lualine').setup({
   },
   sections = {
     lualine_y = {function()
-      return 'XXX'
+      return vim.g.dbext_default_profile
     end}
   }
 })
@@ -136,6 +148,11 @@ telescope.setup({
   defaults = {
     -- layout_strategy = 'vertical',
     -- borderchars = {'─', '│', '─', '│', '┌', '┐', '┘', '└'},
+    mappings = {
+      i = {
+        ['<C-d>'] = require('telescope.actions').delete_buffer
+      }
+    }
   },
   extension = {
     file_browser = {
@@ -210,7 +227,7 @@ lspconfig.pyright.setup({})
 -- tweak diff colors
 
 -- copy path to clipboard
-vim.keymap.set('n', '<Leader><Char-0x5c>', ':let @+ = expand("%:p")<CR>', {noremap = true, silent = true})
+vim.keymap.set('n', '<Leader><Leader>', ':let @+ = expand("%:p")<CR>', {noremap = true, silent = true})
 
 -- search selected word
 vim.keymap.set('v', '*', 'y/\\V<C-r>=escape(@", "/\")<CR><CR>', {noremap = true})

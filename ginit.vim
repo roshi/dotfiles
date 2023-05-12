@@ -2,6 +2,10 @@ set mouse=a
 set linespace=0
 set signcolumn=yes
 
+if has('mac')
+  map <Char-0xa5> <Leader>
+endif
+
 if exists(':GuiFont')
   GuiFont! MesloLGM\ Nerd\ Font\ Mono:h12
 endif
