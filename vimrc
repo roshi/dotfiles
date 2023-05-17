@@ -19,6 +19,7 @@ Plug 'prabirshrestha/vim-lsp'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
 Plug 'lambdalisue/fern.vim'
+Plug 'airblade/vim-gitgutter'
 if exists('*g:LoadPlug')
   call g:LoadPlug()
 endif
