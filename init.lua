@@ -222,8 +222,7 @@ lspconfig.pyright.setup({})
 
 -- tweak diff colors
 
--- copy path to clipboard
+-- misc
 vim.keymap.set('n', '<Leader><Leader>', ':let @+ = expand("%:p")<CR>', {noremap = true, silent = true})
-
--- search selected word
 vim.keymap.set('v', '*', 'y/\\V<C-r>=escape(@", "/\")<CR><CR>', {noremap = true})
+vim.keymap.set('n', '<Esc><Esc>', ':nohl<CR>')

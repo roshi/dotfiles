@@ -268,8 +268,7 @@ highlight DiffDelete cterm=bold ctermfg=10 ctermbg=52
 highlight DiffChange cterm=bold ctermfg=10 ctermbg=17
 highlight DiffText   cterm=bold ctermfg=10 ctermbg=21
 
-" copy path to clipboard
+" misc
 nnoremap <silent> <Leader><Char-0x5c> :let @+ = expand("%:p")<CR>
-
-" search selected word
 vnoremap * y/\V<C-R>=escape(@", '/\')<CR><CR>
+nmap <Esc><Esc> :nohl<CR>
