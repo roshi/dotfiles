@@ -171,6 +171,7 @@ let g:ctrlp_working_path_mode = 'wa'
 let g:ctrlp_switch_buffer = 'et'
 let g:ctrlp_max_files = 0
 let g:ctrlp_match_window = 'bottom,btt,min:1,max:10,results:100'
+let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
 " let g:ctrlp_mruf_exclude = '^\/'
 let g:ctrlp_prompt_mappings = { 'PrtInsert()': ['<c-Bslash>', '<F3>'] }
 nnoremap [ctrlp] <Nop>
