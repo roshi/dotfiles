@@ -8,7 +8,6 @@ Plug 'AndrewRadev/linediff.vim'
 Plug 'itchyny/lightline.vim'
 Plug 'dracula/vim'
 Plug 'vim-scripts/dbext.vim'
-Plug 'dhruvasagar/vim-table-mode'
 Plug 'tpope/vim-fugitive'
 Plug 'jremmen/vim-ripgrep'
 Plug 'ctrlpvim/ctrlp.vim'
@@ -147,10 +146,6 @@ function! DBextPgsqlDDL(...)
   return dbext#DB_execFuncWCheck("runCmd", cmd, "", "")
 endfunction
 nnoremap <silent> <Leader>sds :call DBextPgsqlDDL()<CR>
-
-" vim-table-mode
-let g:table_mode_corner_corner = '+'
-vnoremap <silent> <Leader>tu :<C-u>'<,'>!perl -lne "@F = split(/ *\x7c */); print join(chr(0x9), splice(@F, 1, -1))"<CR>
 
 " status
 set laststatus=2
