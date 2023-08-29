@@ -16,6 +16,7 @@ require('lazy').setup({
   'dracula/vim',
   'thinca/vim-quickrun',
   'tpope/vim-dadbod',
+  'tpope/vim-fugitive',
   {'nvim-lualine/lualine.nvim',dependencies = {'nvim-tree/nvim-web-devicons', opt = true}},
   {'nvim-telescope/telescope.nvim', tag = '0.1.2', dependencies = {'nvim-lua/plenary.nvim'}},
   {'nvim-telescope/telescope-file-browser.nvim', dependencies = {'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim'}},
@@ -222,7 +223,7 @@ lspconfig.pyright.setup({})
 
 -- tweak diff colors
 
--- misc
+-- keymap
 vim.keymap.set('n', '<Leader><Leader>', ':let @+ = expand("%:p")<CR>', {noremap = true, silent = true})
 vim.keymap.set('v', '*', 'y/\\V<C-r>=escape(@", "/\")<CR><CR>', {noremap = true})
 vim.keymap.set('n', '<Esc><Esc>', ':nohl<CR>')

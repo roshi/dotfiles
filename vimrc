@@ -1,6 +1,6 @@
 " cd /path/to/vim/vim*/autoload
 " curl -fLo plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-" mkdir ~/.vim/plugged ~/.vim/tmp
+" mkdir ~/.vim/plugged
 
 call plug#begin('~/.vim/plugged')
 Plug 'thinca/vim-quickrun'
@@ -28,9 +28,9 @@ source $VIMRUNTIME/macros/matchit.vim
 
 
 " backup
-set directory=~/.vim/tmp
-set backupdir=~/.vim/tmp
-set undodir=~/.vim/tmp
+set noswapfile
+set nobackup
+set noundofile
 
 " filetype
 au FileType sql set softtabstop=2 | set shiftwidth=2 | set expandtab
@@ -142,7 +142,6 @@ function! DBextPgsqlDDL(...)
     \ DBextConcatOption(' -t', DBextGetTableName(), ' ') .
     \ DBextConcatOption(' ', dbext#DB_getWTypeDefault("extra"), '') .
     \ ' -s'
-  " -f ' . dbext#DB_getWTypeDefault("temp_file")
   return dbext#DB_execFuncWCheck("runCmd", cmd, "", "")
 endfunction
 nnoremap <silent> <Leader>sds :call DBextPgsqlDDL()<CR>
@@ -167,7 +166,6 @@ let g:ctrlp_switch_buffer = 'et'
 let g:ctrlp_max_files = 0
 let g:ctrlp_match_window = 'bottom,btt,min:1,max:10,results:100'
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
-" let g:ctrlp_mruf_exclude = '^\/'
 let g:ctrlp_prompt_mappings = { 'PrtInsert()': ['<c-Bslash>', '<F3>'] }
 nnoremap [ctrlp] <Nop>
 nmap <space> [ctrlp]
@@ -178,6 +176,12 @@ nnoremap <silent> [ctrlp]b :<C-u>CtrlPBuffer<CR>
 
 " fern
 nnoremap <silent> [ctrlp]e :<C-u>Fern .<CR>
+
+" gitgutter
+if has('win32') || has('win64')
+  " let g:gitgutter_git_executable = 'git'
+  let g:gitgutter_enabled = 0
+endif
 
 " asyncomplete
 let g:asyncomplete_remove_duplicates = 1
@@ -200,7 +204,7 @@ function! s:on_lsp_buffer_enabled() abort
   setlocal signcolumn=yes
   if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
   nmap <buffer> gd <plug>(lsp-definition)
-  nmap <buffer> gD :tab LspDefinition<CR>
+  nmap <buffer> gc <plug>(lsp-declaration)
   nmap <buffer> gs <plug>(lsp-document-symbol-search)
   nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
   nmap <buffer> gr <plug>(lsp-reference)
@@ -263,7 +267,7 @@ highlight DiffDelete cterm=bold ctermfg=10 ctermbg=52
 highlight DiffChange cterm=bold ctermfg=10 ctermbg=17
 highlight DiffText   cterm=bold ctermfg=10 ctermbg=21
 
-" misc
+" keymap
 nnoremap <silent> <Leader><Char-0x5c> :let @+ = expand("%:p")<CR>
 vnoremap * y/\V<C-R>=escape(@", '/\')<CR><CR>
 nmap <Esc><Esc> :nohl<CR>
