@@ -24,6 +24,8 @@ require('lazy').setup({
   'hrsh7th/nvim-cmp',
   'hrsh7th/cmp-vsnip',
   'hrsh7th/vim-vsnip',
+
+  -- {'akinsho/flutter-tools.nvim', lazy = false, dependencies = {'nvim-lua/plenary.nvim'}, config = true},
 })
 
 -- filetype
@@ -111,19 +113,24 @@ vim.keymap.set('v', '<Leader>R', ":<C-u>'<,'>QuickRun sh<CR>", {noremap = true, 
 -- database
 -- vim.g.dadbod_manage_dbext = 0
 vim.keymap.set('n', '<Leader>sbp', function()
-  vim.ui.select({}, {
+  vim.ui.select(vim.tbl_keys(vim.g.dadbods or {}), {
     prompt = 'Select dbext profile',
   }, function(prof)
+    if prof == '' then
+      return
+    end
     vim.g.dbext_default_profile = prof
+    vim.g.db = vim.g.dadbods[prof]
   end)
 end, {noremap = true, silent = true})
+vim.keymap.set('v', '<Leader>se', ":<C-u>'<,'>DB<CR><CR>", {noremap = true, silent = true})
 vim.api.nvim_create_autocmd('BufReadPost', {
   pattern = {'*.dbout'},
-  command = 'nnoremap <buffer> q :<C-u>q<CR>'
+  command = 'nnoremap <buffer> q :<C-u>bw!<CR>'
 })
 
 -- status
-vim.opt.laststatus = 2
+vim.opt.cmdheight = 0
 require('lualine').setup({
   options = {
     theme = 'dracula',
@@ -140,13 +147,15 @@ require('lualine').setup({
 
 -- finder
 local telescope = require('telescope')
+local tsactions = require('telescope.actions')
 telescope.setup({
   defaults = {
     -- layout_strategy = 'vertical',
     -- borderchars = {'─', '│', '─', '│', '┌', '┐', '┘', '└'},
     mappings = {
       i = {
-        ['<C-d>'] = require('telescope.actions').delete_buffer
+        ['<C-d>'] = tsactions.delete_buffer,
+        ['<esc>'] = tsactions.close
       }
     }
   },
@@ -219,6 +228,9 @@ lspconfig.gopls.setup({
 
 -- lsp:python
 lspconfig.pyright.setup({})
+
+-- lsp:flutter
+-- require('flutter-tools').setup({})
 
 -- tweak diff colors
 
