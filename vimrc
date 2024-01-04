@@ -168,7 +168,13 @@ let g:ctrlp_max_files = 0
 let g:ctrlp_match_window = 'bottom,btt,min:1,max:10,results:100'
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
 " let g:ctrlp_mruf_exclude = '^\/'
-let g:ctrlp_prompt_mappings = { 'PrtInsert()': ['<c-Bslash>', '<F3>'] }
+let g:ctrlp_prompt_mappings = {
+  \   'PrtInsert()': ['<c-Bslash>', '<F3>'],
+  \   'PrtHistory(-1)': [],
+  \   'PrtHistory(1)': [],
+  \   'PrtSelectMove("j")': ['<c-j>', '<down>', '<c-n>'],
+  \   'PrtSelectMove("k")': ['<c-k>', '<up>', '<c-p>'],
+  \ }
 nnoremap [ctrlp] <Nop>
 nmap <space> [ctrlp]
 nnoremap <silent> [ctrlp]f :<C-u>CtrlPCurFile<CR>
