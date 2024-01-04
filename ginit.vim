@@ -7,7 +7,9 @@ if has('mac')
 endif
 
 if exists(':GuiFont')
-  GuiFont! MesloLGM\ Nerd\ Font\ Mono:h12
+  GuiFont! MesloLGM\ Nerd\ Font\ Mono:h11
+else
+  set guifont=MesloLGM\ Nerd\ Font\ Mono:h11
 endif
 
 if exists(':GuiTabline')
