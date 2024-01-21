@@ -1,15 +1,7 @@
 # load each new shell process
 
 alias ll='ls -al --color'
-
-_fzf_complete_git() {
-  if [[ "$@" == "git switch "* || "$@" == "git checkout "* ]];then
-    _fzf_complete --reverse --multi -- "$@" < <(
-      git branch --format "%(refname:short)"
-    )
-  else
-    eval "zle ${fzf_default_completion:-expand-or-complete}"
-  fi
-}
+alias dvrm='docker volume ls -q | xargs docker volume rm -f'
+alias dprm='docker ps -aq | xargs docker rm -f'
 
 #vim: set ft=sh

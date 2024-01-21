@@ -156,7 +156,7 @@ telescope.setup({
     mappings = {
       i = {
         ['<C-d>'] = tsactions.delete_buffer,
-        ['<esc>'] = tsactions.close
+        ['<esc>'] = tsactions.close,
       }
     }
   },
@@ -167,7 +167,7 @@ telescope.setup({
     }
   }
 })
-telescope.load_extension 'file_browser'
+telescope.load_extension('file_browser')
 local tsbuiltin = require('telescope.builtin')
 vim.keymap.set('n', '<Space>f', tsbuiltin.find_files, {})
 vim.keymap.set('n', '<Space>g', tsbuiltin.git_files, {})

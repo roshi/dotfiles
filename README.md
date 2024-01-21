@@ -1,11 +1,20 @@
 dotfiles
-========
+==========
 
-```
-git clone https://github.com/roshi/dotfiles.git
-ln -s ~/dotfiles/vimrc ~/.vimrc
-ln -s ~/dotfiles/gvimrc ~/.gvimrc
+1. clone dotfiles
 
-ln -s ~/dotfiles/black ~/.config/black
-ln -s ~/dotfiles/flake8 ~/.config/flake8
-```
+   ```
+   git clone https://github.com/roshi/dotfiles.git
+   ```
+
+2. apply files
+
+   ```
+   ./dotfiles/configure.sh apply
+   ```
+
+3. destroy files
+
+   ```
+   ./dotfiles/configure.sh destroy
+   ```

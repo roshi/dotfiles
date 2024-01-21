@@ -1,8 +1,14 @@
-" cd /path/to/vim/vim*/autoload
-" curl -fLo plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-" mkdir ~/.vim/plugged
+let vim_data_dir = expand('~/.local/share/vim')
+let vim_plug_dir = expand(vim_data_dir . '/plugged')
+let vim_plug_file = expand(vim_plug_dir . '/plug.vim')
+if !isdirectory(vim_plug_dir)
+  call mkdir(vim_plug_dir, 'p')
+  execute 'silent !curl -fLo ' . vim_plug_file . ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | :qa
+endif
+execute 'source ' . vim_plug_file
 
-call plug#begin('~/.vim/plugged')
+call plug#begin(vim_plug_dir)
 Plug 'thinca/vim-quickrun'
 Plug 'AndrewRadev/linediff.vim'
 Plug 'itchyny/lightline.vim'
@@ -252,7 +258,7 @@ if executable('pylsp')
     autocmd!
     autocmd User lsp_setup call lsp#register_server({
       \   'name': 'pylsp',
-      \   'cmd': {server_info -> ['pylsp']},
+      \   'cmd': {server_info->['pylsp']},
       \   'allowlist': ['python'],
       \   'workspace_config': {'pylsp': {
       \     'configurationSources': ['flake8'],
@@ -277,4 +283,4 @@ highlight DiffText   cterm=bold ctermfg=10 ctermbg=21
 " keymap
 nnoremap <silent> <Leader><Char-0x5c> :let @+ = expand("%:p")<CR>
 vnoremap * y/\V<C-R>=escape(@", '/\')<CR><CR>
-nmap <Esc><Esc> :nohl<CR>
+nmap <silent> <Esc><Esc> :nohl<CR>
