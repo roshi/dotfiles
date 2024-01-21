@@ -13,8 +13,8 @@ dotfiles
    ./dotfiles/configure.sh apply
    ```
 
-3. destroy files
+3. unapply files
 
    ```
-   ./dotfiles/configure.sh destroy
+   ./dotfiles/configure.sh unapply
    ```
