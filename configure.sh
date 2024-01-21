@@ -109,7 +109,7 @@ config_vimrc() {
 config_nviminit() {
   for f in init.lua ginit.lua; do
     target=~/.config/nvim/$f
-    patch="source ${WORK_DIR}/${f}"
+    patch="vim.cmd('source ${WORK_DIR}/${f}')"
     patched=$(grep -q "${patch}" $target &> /dev/null; echo $?)
   
     if applying; then

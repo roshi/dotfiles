@@ -25,6 +25,7 @@ Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
 Plug 'lambdalisue/fern.vim'
 Plug 'airblade/vim-gitgutter'
+Plug 'github/copilot.vim'
 if exists('*g:LoadPlug')
   call g:LoadPlug()
 endif

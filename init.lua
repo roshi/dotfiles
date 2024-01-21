@@ -25,6 +25,7 @@ require('lazy').setup({
   'hrsh7th/nvim-cmp',
   'hrsh7th/cmp-vsnip',
   'hrsh7th/vim-vsnip',
+  'github/copilot.vim',
 
   -- {'akinsho/flutter-tools.nvim', lazy = false, dependencies = {'nvim-lua/plenary.nvim'}, config = true},
 })
@@ -197,7 +198,7 @@ cmp.setup({
 })
 
 -- lsp
-local lspconfig = require('lspconfig')
+-- vim.lsp.set_log_level(vim.log.levels.DEBUG)
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('UserLspConfig', {}),
   callback = function(ev)
@@ -211,21 +212,12 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
   end
 })
+local lspconfig = require('lspconfig')
+-- local capabilities = vim.lsp.protocol.make_client_capabilities()
+-- capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 -- lsp:golang
-lspconfig.gopls.setup({
-  on_attach = function(client, bufnr)
-    if client.server_capabilities.documentFormattingProvider then
-      vim.api.nvim_create_autocmd('BufWritePre', {
-        group = vim.api.nvim_create_augroup('Format', {clear = true}),
-        buffer = bufnr,
-        callback = function()
-          vim.lsp.buf.format()
-        end
-      })
-    end
-  end,
-})
+lspconfig.gopls.setup({})
 
 -- lsp:python
 lspconfig.pyright.setup({})
