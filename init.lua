@@ -18,15 +18,16 @@ require('lazy').setup({
   'tpope/vim-dadbod',
   'tpope/vim-fugitive',
   {'nvim-lualine/lualine.nvim',dependencies = {'nvim-tree/nvim-web-devicons', opt = true}},
-  {'nvim-telescope/telescope.nvim', tag = '0.1.2', dependencies = {'nvim-lua/plenary.nvim'}},
+  {'nvim-treesitter/nvim-treesitter', build = ":TSUpdate"},
+  {'nvim-telescope/telescope.nvim', tag = '0.1.2', dependencies = {'nvim-lua/plenary.nvim', 'nvim-treesitter/nvim-treesitter'}},
   {'nvim-telescope/telescope-file-browser.nvim', dependencies = {'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim'}},
   'neovim/nvim-lspconfig',
   'hrsh7th/cmp-nvim-lsp',
   'hrsh7th/nvim-cmp',
   'hrsh7th/cmp-vsnip',
   'hrsh7th/vim-vsnip',
-  'github/copilot.vim',
 
+  'github/copilot.vim',
   -- {'akinsho/flutter-tools.nvim', lazy = false, dependencies = {'nvim-lua/plenary.nvim'}, config = true},
 })
 
@@ -169,12 +170,27 @@ telescope.setup({
   }
 })
 telescope.load_extension('file_browser')
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'TelescopePreviewerLoaded',
+  command = 'set filetype=',
+})
 local tsbuiltin = require('telescope.builtin')
 vim.keymap.set('n', '<Space>f', tsbuiltin.find_files, {})
 vim.keymap.set('n', '<Space>g', tsbuiltin.git_files, {})
 vim.keymap.set('n', '<Space>m', tsbuiltin.oldfiles, {})
 vim.keymap.set('n', '<Space>b', tsbuiltin.buffers, {})
 vim.keymap.set('n', '<Space>e', ':<C-u>Telescope file_browser<CR>', {})
+
+-- syntax
+require('nvim-treesitter.configs').setup({
+  ensure_installed = {'svelte', 'typescript'},
+  highlight = {
+    enable = true,
+  },
+  indent = {
+    enable = true,
+  },
+})
 
 -- completion
 local cmp = require('cmp')
@@ -221,6 +237,9 @@ lspconfig.gopls.setup({})
 
 -- lsp:python
 lspconfig.pyright.setup({})
+
+-- lsp:typescript
+lspconfig.tsserver.setup({})
 
 -- lsp:flutter
 -- require('flutter-tools').setup({})

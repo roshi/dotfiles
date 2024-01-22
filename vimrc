@@ -1,6 +1,10 @@
-let vim_data_dir = expand('~/.local/share/vim')
-let vim_plug_dir = expand(vim_data_dir . '/plugged')
+let g:vim_state_dir = expand('~/.local/state/vim')
+let g:vim_data_dir = expand('~/.local/share/vim')
+let vim_plug_dir = expand(g:vim_data_dir . '/plugged')
 let vim_plug_file = expand(vim_plug_dir . '/plug.vim')
+if !isdirectory(g:vim_state_dir)
+  call mkdir(g:vim_state_dir, 'p')
+endif
 if !isdirectory(vim_plug_dir)
   call mkdir(vim_plug_dir, 'p')
   execute 'silent !curl -fLo ' . vim_plug_file . ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
@@ -187,6 +191,7 @@ nnoremap <silent> [ctrlp]f :<C-u>CtrlPCurFile<CR>
 nnoremap <silent> [ctrlp]g :<C-u>CtrlPRoot<CR>
 nnoremap <silent> [ctrlp]m :<C-u>CtrlPMRU<CR>
 nnoremap <silent> [ctrlp]b :<C-u>CtrlPBuffer<CR>
+" nnoremap <silent> [ctrlp]G :<C-u>CtrlP ~/path/to/app<CR>
 
 " fern
 nnoremap <silent> [ctrlp]e :<C-u>Fern .<CR>
@@ -207,7 +212,7 @@ let g:asyncomplete_auto_popup = 1
 " let g:lsp_signature_help_enabled = 0
 " let g:lsp_diagnostics_enabled = 1
 " let g:lsp_log_verbose = 1
-" let g:lsp_log_file = expand('~/.vim/vim-lsp.log')
+" let g:lsp_log_file = expand(g:vim_state_dir . '/vim-lsp.log')
 let g:lsp_diagnostics_virtual_text_enabled = 1
 let g:lsp_diagnostics_virtual_text_align = 'right'
 let g:lsp_diagnostics_virtual_text_wrap = 'truncate'
@@ -275,6 +280,26 @@ if executable('pylsp')
   augroup END
 endif
 
+" lsp:typescript
+if executable('typescript-language-server')
+  augroup LspTypescript
+    autocmd!
+    autocmd User lsp_setup call lsp#register_server({
+      \   'name': 'typescript-language-server',
+      \   'cmd': {server_info->['typescript-language-server', '--stdio']},
+      \   'root_uri': {server_info->lsp#utils#path_to_uri(
+      \     lsp#utils#find_nearest_parent_file_directory(
+      \       lsp#utils#get_buffer_path(), ['tsconfig.json']
+      \     )
+      \   )},
+      \   'initialization_options': {'diagnostics': 'true'},
+      \   'whitelist': ['javascript','typescript','javascript.jsx','typescript.tsx'],
+      \   'workspace_config': {},
+      \   'semantic_highlight': {},
+      \ })
+  augroup END
+endif
+
 " tweak diff colors
 highlight DiffAdd    cterm=bold ctermfg=10 ctermbg=22
 highlight DiffDelete cterm=bold ctermfg=10 ctermbg=52
@@ -285,3 +310,18 @@ highlight DiffText   cterm=bold ctermfg=10 ctermbg=21
 nnoremap <silent> <Leader><Char-0x5c> :let @+ = expand("%:p")<CR>
 vnoremap * y/\V<C-R>=escape(@", '/\')<CR><CR>
 nmap <silent> <Esc><Esc> :nohl<CR>
+
+" ripgrep
+" function! LcdAndRg(path)
+"   let l:keyword = input('Enter keyword to search for ' . a:path . ': ')
+"   exec 'lcd' a:path '|' 'Rg' l:keyword
+" endfunction
+" nnoremap <silent> <Space>pp :<C-u>call LcdAndRg('~/path/to/app')<CR>
+
+" dbext
+" let g:dbext_default_history_file = expand(g:vim_state_dir . '/dbext_sql_history.txt')
+" let g:dbext_default_profile_KTDEV = 'type=PGSQL:dbname=kt-dev:host=localhost:user=postgres:passwd=password'
+" let g:dbext_default_profile = 'None'
+
+" vsnip
+" let g:vsnip_snippet_dir = '~/path/to/vsnip'
