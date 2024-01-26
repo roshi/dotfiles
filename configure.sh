@@ -1,127 +1,70 @@
-#/usr/bin/env bash
+#/bin/sh
 
 set -Ceux
-WORK_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd | sed -e "s|$HOME|\~|")
-
-applying() {
-  [ $subcommand == "apply" ]
-}
-
-unapplying() {
-  [ $subcommand == "unapply" ]
-}
+BASE_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")" &> /dev/null && pwd | sed -e "s|$HOME|\~|")
 
 exit_usage() {
   echo "usage: $0 [apply|unapply]"
-  [ ! -z "$1" ] && echo "error: $1"
+  [ $# -ge 1 ] && echo "error: $1"
   exit 1
 }
 
-assume_rcprofile() {
-  if [ -z "$1" ]; then
-    exit_usage "assume_rcprofile: missing argument"
-  fi
-  if [ "$1" == "profile" ]; then
-    echo $1
-    return
-  fi
-
-  if [ -n "$BASH_VERSION" ]; then
-    echo "ba$1"
-  elif [ -n "$ZSH_VERSION" ]; then
-    echo "z$1"
+assume_shell() {
+  if [ -n "${BASH_VERSION+x}" ]; then
+    echo "bash"
+  elif [ -n "${ZSH_VERSION+x}" ]; then
+    echo "zsh"
   else
     exit_usage "unknown shell"
   fi
 }
 
-config_readline() {
-  target=~/.config/readline/inputrc
-  patch="\$include ${WORK_DIR}/inputrc"
-  patched=$(grep -q "${patch}" $target &> /dev/null; echo $?)
+extract_configure() {
+  target=$1
+  patch=$2
+  patched=$(if grep -q "${patch}" $target &> /dev/null; then echo 0; else echo 1; fi)
 
-  if applying; then
-    mkdir -p $(dirname -- $target)
+  if [ $subcommand = "apply" ]; then
+    mkdir -p $(dirname -- $target) && touch $target
     [ $patched -ne 0 ] && echo "${patch}" >> $target
-  elif unapplying; then
-    [ $patched -eq 0 ] && sed -i "\:${patch}:d" $target
+  elif [ $subcommand = "unapply" ]; then
+    [ $patched -eq 0 ] && sed -i '' -e "\:${patch}:d" $target
   else
     exit_usage
   fi
 
+  return 0
+}
+
+config_readline() {
+  extract_configure ~/.config/readline/inputrc "\$include ${BASE_DIR}/inputrc"
   return 0
 }
 
 config_tmux() {
-  target=~/.config/tmux/tmux.conf
-  patch="source-file ${WORK_DIR}/tmux.conf"
-  patched=$(grep -q "${patch}" $target &> /dev/null; echo $?)
-
-  if applying; then
-    mkdir -p $(dirname -- $target)
-    [ $patched -ne 0 ] && echo "${patch}" >> $target
-  elif unapplying; then
-    [ $patched -eq 0 ] && sed -i "\:${patch}:d" $target
-  else
-    exit_usage
-  fi
-
+  extract_configure ~/.config/tmux/tmux.conf "source-file ${BASE_DIR}/tmux.conf"
   return 0
 }
 
 config_rcprofile() {
-  for f in shrc profile; do
-    target=~/.$(assume_rcprofile $f)
-    patch="source ${WORK_DIR}/${f}"
-    patched=$(grep -q "${patch}" $target &> /dev/null; echo $?)
-
-    if applying; then
-      [ $patched -ne 0 ] && echo "${patch}" >> $target
-    elif unapplying; then
-      [ $patched -eq 0 ] && sed -i "\:${patch}:d" $target
-    else
-      exit_usage
-    fi
+  sh=$(assume_shell)
+  for f in profile shrc; do
+    extract_configure ~/.$(if [ $f = "shrc" ]; then echo ${sh:0:${#sh}-2}; fi)$f "source ${BASE_DIR}/${f}"
   done
-
   return 0
 }
 
 config_vimrc() {
   for f in vimrc gvimrc; do
-    target=~/.config/vim/$f
-    patch="source ${WORK_DIR}/${f}"
-    patched=$(grep -q "${patch}" $target &> /dev/null; echo $?)
-  
-    if applying; then
-      mkdir -p $(dirname -- $target)
-      [ $patched -ne 0 ] && echo "${patch}" >> $target
-    elif unapplying; then
-      [ $patched -eq 0 ] && sed -i "\:${patch}:d" $target
-    else
-      exit_usage
-    fi
+    extract_configure ~/.config/vim/$f "source ${BASE_DIR}/${f}"
   done
-
   return 0
 }
 
 config_nviminit() {
   for f in init.lua ginit.lua; do
-    target=~/.config/nvim/$f
-    patch="vim.cmd('source ${WORK_DIR}/${f}')"
-    patched=$(grep -q "${patch}" $target &> /dev/null; echo $?)
-  
-    if applying; then
-      mkdir -p $(dirname -- $target)
-      [ $patched -ne 0 ] && echo "${patch}" >> $target
-    elif unapplying; then
-      [ $patched -eq 0 ] && sed -i "\:${patch}:d" $target
-    else
-      exit_usage
-    fi
+    extract_configure ~/.config/nvim/$f "vim.cmd('source ${BASE_DIR}/${f}')"
   done
-
   return 0
 }
 
