@@ -1,22 +1,17 @@
 #/bin/sh
 
+# ./configure.sh apply ~
+# ./configure.sh unapply ~
+
 set -Ceux
+
 BASE_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")" &> /dev/null && pwd | sed -e "s|$HOME|\~|")
+DEST_DIR=
 
 exit_usage() {
-  echo "usage: $0 [apply|unapply]"
+  echo "usage: $0 [apply|unapply] dest_dir"
   [ $# -ge 1 ] && echo "error: $1"
   exit 1
-}
-
-assume_shell() {
-  if [ -n "${BASH_VERSION+x}" ]; then
-    echo "bash"
-  elif [ -n "${ZSH_VERSION+x}" ]; then
-    echo "zsh"
-  else
-    exit_usage "unknown shell"
-  fi
 }
 
 extract_configure() {
@@ -37,41 +32,56 @@ extract_configure() {
 }
 
 config_readline() {
-  extract_configure ~/.config/readline/inputrc "\$include ${BASE_DIR}/inputrc"
+  extract_configure ${DEST_DIR:-~/.config/readline}/inputrc "\$include ${BASE_DIR}/inputrc"
   return 0
 }
 
 config_tmux() {
-  extract_configure ~/.config/tmux/tmux.conf "source-file ${BASE_DIR}/tmux.conf"
+  extract_configure ${DEST_DIR:-~/.config/tmux}/tmux.conf "source-file ${BASE_DIR}/tmux.conf"
   return 0
 }
 
 config_rcprofile() {
-  sh=$(assume_shell)
-  for f in profile shrc; do
-    extract_configure ~/.$(if [ $f = "shrc" ]; then echo ${sh:0:${#sh}-2}; fi)$f "source ${BASE_DIR}/${f}"
+  if [ -n "${BASH_VERSION+x}" ]; then
+    sh="bash"
+  elif [ -n "${ZSH_VERSION+x}" ]; then
+    sh="zsh"
+  else
+    exit_usage "unknown shell"
+  fi
+
+  for f in shrc profile; do
+    if [[ $sh = "bash" && $f = "profile" ]]; then
+      target=.${f}
+    else
+      target=.${sh:0:${#sh}-2}${f}
+    fi
+    extract_configure ${DEST_DIR:-~}/$target "source ${BASE_DIR}/${f}"
   done
+
   return 0
 }
 
 config_vimrc() {
   for f in vimrc gvimrc; do
-    extract_configure ~/.config/vim/$f "source ${BASE_DIR}/${f}"
+    extract_configure ${DEST_DIR:-~/.config/vim}/$f "source ${BASE_DIR}/${f}"
   done
   return 0
 }
 
 config_nviminit() {
   for f in init.lua ginit.lua; do
-    extract_configure ~/.config/nvim/$f "vim.cmd('source ${BASE_DIR}/${f}')"
+    extract_configure ${DEST_DIR:-~/.config/nvim}/$f "vim.cmd('source ${BASE_DIR}/${f}')"
   done
   return 0
 }
 
-if [ $# -ne 1 ]; then
+if [ $# -ne 2 ]; then
   exit_usage
 fi
-subcommand="$1"
+subcommand=$1
+shift
+DEST_DIR=$1
 shift
 
 case $subcommand in

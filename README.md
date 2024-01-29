@@ -10,11 +10,11 @@ dotfiles
 2. apply files
 
    ```
-   ./dotfiles/configure.sh apply
+   ./dotfiles/configure.sh apply ~
    ```
 
 3. unapply files
 
    ```
-   ./dotfiles/configure.sh unapply
+   ./dotfiles/configure.sh unapply ~
    ```
