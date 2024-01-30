@@ -38,11 +38,6 @@ call plug#end()
 source $VIMRUNTIME/macros/matchit.vim
 
 
-" backup
-set noswapfile
-set nobackup
-set noundofile
-
 " filetype
 au FileType sql set softtabstop=2 | set shiftwidth=2 | set expandtab
 au FileType help,qf,quickrun nnoremap <buffer> q :<C-u>q<CR>
@@ -61,7 +56,8 @@ set autochdir
 set hidden
 set noswapfile
 set nobackup
-set viminfo='1000
+set noundofile
+set viminfo=
 
 " input
 set backspace=indent,eol,start
