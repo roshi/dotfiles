@@ -1,7 +1,7 @@
 # load each new shell process
 
 alias ll='ls -al --color'
-alias dvrm='docker volume ls -q | xargs docker volume rm -f'
-alias dprm='docker ps -aq | xargs docker rm -f'
+alias dprm='docker ps -qa | xargs docker rm -f'
+alias dvrm='docker ps -qa | xargs docker rm -f && docker volume ls -q | xargs docker volume rm -f'
 
 #vim: set ft=sh
