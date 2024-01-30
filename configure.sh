@@ -1,15 +1,11 @@
 #/bin/sh
 
-# ./configure.sh apply ~
-# ./configure.sh unapply ~
-
 set -Ceux
 
-BASE_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")" &> /dev/null && pwd | sed -e "s|$HOME|\~|")
-DEST_DIR=
+readonly BASE_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")" &> /dev/null && pwd | sed -e "s|$HOME|\~|")
 
 exit_usage() {
-  echo "usage: $0 [apply|unapply] dest_dir"
+  echo "usage: $0 [apply|unapply] [dest_dir]"
   [ $# -ge 1 ] && echo "error: $1"
   exit 1
 }
@@ -19,10 +15,10 @@ extract_configure() {
   patch=$2
   patched=$(if grep -q "${patch}" $target &> /dev/null; then echo 0; else echo 1; fi)
 
-  if [ $subcommand = "apply" ]; then
+  if [ $SUB_CMD = "apply" ]; then
     mkdir -p $(dirname -- $target) && touch $target
     [ $patched -ne 0 ] && echo "${patch}" >> $target
-  elif [ $subcommand = "unapply" ]; then
+  elif [ $SUB_CMD = "unapply" ]; then
     [ $patched -eq 0 ] && sed -i '' -e "\:${patch}:d" $target
   else
     exit_usage
@@ -52,11 +48,11 @@ config_rcprofile() {
 
   for f in shrc profile; do
     if [[ $sh = "bash" && $f = "profile" ]]; then
-      target=.${f}
+      target=${f}
     else
-      target=.${sh:0:${#sh}-2}${f}
+      target=${sh:0:${#sh}-2}${f}
     fi
-    extract_configure ${DEST_DIR:-~}/$target "source ${BASE_DIR}/${f}"
+    extract_configure ${DEST_DIR:-~}/$(if [[ -z "${DEST_DIR}" || $DEST_DIR = ~ ]]; then echo "."; fi)$target "source ${BASE_DIR}/${f}"
   done
 
   return 0
@@ -76,15 +72,17 @@ config_nviminit() {
   return 0
 }
 
-if [ $# -ne 2 ]; then
+if [ $# -eq 2 ]; then
+  readonly SUB_CMD=$1
+  readonly DEST_DIR=$2
+elif [ $# -eq 1 ]; then
+  readonly SUB_CMD=$1
+  readonly DEST_DIR=
+else
   exit_usage
 fi
-subcommand=$1
-shift
-DEST_DIR=$1
-shift
 
-case $subcommand in
+case $SUB_CMD in
   "apply")
     config_readline
     config_tmux
