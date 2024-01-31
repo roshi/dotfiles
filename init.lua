@@ -183,7 +183,7 @@ vim.keymap.set('n', '<Space>e', ':<C-u>Telescope file_browser<CR>', {})
 
 -- syntax
 require('nvim-treesitter.configs').setup({
-  ensure_installed = {'svelte', 'typescript'},
+  ensure_installed = {'lua', 'typescript'},
   highlight = {
     enable = true,
   },
