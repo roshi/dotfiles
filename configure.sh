@@ -38,23 +38,9 @@ config_tmux() {
 }
 
 config_rcprofile() {
-  if [ -n "${BASH_VERSION+x}" ]; then
-    sh="bash"
-  elif [ -n "${ZSH_VERSION+x}" ]; then
-    sh="zsh"
-  else
-    exit_usage "unknown shell"
-  fi
-
   for f in shrc profile; do
-    if [[ $sh = "bash" && $f = "profile" ]]; then
-      target=${f}
-    else
-      target=${sh:0:${#sh}-2}${f}
-    fi
-    extract_configure ${DEST_DIR:-~}/$(if [[ -z "${DEST_DIR}" || $DEST_DIR = ~ ]]; then echo "."; fi)$target "source ${BASE_DIR}/${f}"
+    extract_configure ${DEST_DIR:-~}/$(if [[ -z "${DEST_DIR}" || $DEST_DIR = ~ ]]; then echo "."; fi)$f "source ${BASE_DIR}/${f}"
   done
-
   return 0
 }
 
@@ -75,9 +61,9 @@ config_nviminit() {
 if [ $# -eq 2 ]; then
   readonly SUB_CMD=$1
   readonly DEST_DIR=$2
-elif [ $# -eq 1 ]; then
-  readonly SUB_CMD=$1
-  readonly DEST_DIR=
+# elif [ $# -eq 1 ]; then
+#   readonly SUB_CMD=$1
+#   readonly DEST_DIR=
 else
   exit_usage
 fi
