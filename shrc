@@ -1,6 +1,6 @@
 # load each new shell process
 
-alias ll='ls -al --color'
+alias ll='ls -al'
 alias dprm='docker ps -qa | xargs docker rm -f'
 alias dvrm='docker ps -qa | xargs docker rm -f && docker volume ls -q | xargs docker volume rm -f'
 
