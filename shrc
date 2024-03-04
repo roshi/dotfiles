@@ -1,4 +1,7 @@
 # load each new shell process
+[ -z "$PS1" ] && return
+
+PS1="%c %# "
 
 alias ll='ls -al'
 alias dprm='docker ps -qa | xargs docker rm -f'

@@ -3,7 +3,7 @@ set imsearch=0
 set linespace=0
 
 if has('mac')
-  set guifont=MesloLGMNFM-Regular:h12,Menlo:h12
+  set guifont=MesloLGSNFM-Regular:h12,Menlo:h12
 endif
 
 " gvim

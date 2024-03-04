@@ -316,7 +316,7 @@ nmap <silent> <Esc><Esc> :nohl<CR>
 
 " dbext
 " let g:dbext_default_history_file = expand(g:vim_state_dir . '/dbext_sql_history.txt')
-" let g:dbext_default_profile_KTDEV = 'type=PGSQL:dbname=kt-dev:host=localhost:user=postgres:passwd=password'
+" let g:dbext_default_profile_DBDEV = 'type=PGSQL:dbname=db-dev:host=localhost:user=postgres:passwd=password'
 " let g:dbext_default_profile = 'None'
 
 " vsnip
