@@ -35,3 +35,9 @@ misc
    ```
    brew tap homebrew/cask-fonts && brew install --cask font-meslo-lg-nerd-font
    ```
+
+- tidy merged local branches
+
+  ```
+  git config --global alias.tidy "git fetch -p && git branch -vv | grep 'origin/.*: gone]' | awk '{ print $1 }' | xargs git branch -D"
+  ```
