@@ -78,6 +78,7 @@ set ignorecase
 set smartcase
 set incsearch
 set hlsearch
+au QuickFixCmdPost *grep* cwindow
 
 " view
 set showmatch
@@ -105,11 +106,12 @@ set fileencodings=utf-8,cp932
 set belloff=all
 set modelines=1
 
-" tab/buffer
-nnoremap <C-n> :tabnext<CR>
-nnoremap <C-p> :tabprevious<CR>
+" buffer
 nnoremap <C-j> :bnext<CR>
 nnoremap <C-k> :bprevious<CR>
+nnoremap <C-n> :tabnext<CR>
+nnoremap <C-p> :tabprevious<CR>
+nnoremap <C-u> :tabnew<CR>
 
 " quickrun
 let g:quickrun_config = {}
