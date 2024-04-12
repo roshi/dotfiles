@@ -142,7 +142,7 @@ function! DBextMysqlDDL(...)
   return dbext#DB_execSql('show create table `' . DBextGetTableName() . '`')
 endfunction
 function! DBextPgsqlDDL(...)
-  let cmd = 'pg_dump ' .
+  let cmd = fnamemodify(g:dbext_default_PGSQL_bin, ':h') . '/pg_dump ' .
     \ dbext#DB_getWType("cmd_options") .
     \ DBextConcatOption(' -d', dbext#DB_getWTypeDefault("dbname"), ' ') .
     \ DBextConcatOption(' -U', dbext#DB_getWTypeDefault("user"), ' ') .
@@ -279,8 +279,9 @@ if executable('pylsp')
 endif
 
 " lsp:typescript
+" npm install -g typescript-language-server typescript
 if executable('typescript-language-server')
-  augroup LspTypescript
+  augroup tslsp
     autocmd!
     autocmd User lsp_setup call lsp#register_server({
       \   'name': 'typescript-language-server',
@@ -291,7 +292,7 @@ if executable('typescript-language-server')
       \     )
       \   )},
       \   'initialization_options': {'diagnostics': 'true'},
-      \   'whitelist': ['javascript','typescript','javascript.jsx','typescript.tsx'],
+      \   'allowlist': ['javascript','typescript', 'typescriptreact','javascript.jsx','typescript.tsx'],
       \   'workspace_config': {},
       \   'semantic_highlight': {},
       \ })
