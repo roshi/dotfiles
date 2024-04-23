@@ -111,7 +111,8 @@ nnoremap <C-j> :bnext<CR>
 nnoremap <C-k> :bprevious<CR>
 nnoremap <C-n> :tabnext<CR>
 nnoremap <C-p> :tabprevious<CR>
-nnoremap <C-u> :tabnew<CR>
+nnoremap <C-u> :tab split<CR>
+nnoremap <C-d> :quit<CR>
 
 " quickrun
 let g:quickrun_config = {}
