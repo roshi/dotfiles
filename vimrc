@@ -111,7 +111,7 @@ nnoremap <C-j> :bnext<CR>
 nnoremap <C-k> :bprevious<CR>
 nnoremap <C-n> :tabnext<CR>
 nnoremap <C-p> :tabprevious<CR>
-nnoremap <C-u> :tab split<CR>
+nnoremap <C-u> :tab split \| enew<CR>
 nnoremap <C-d> :quit<CR>
 
 " quickrun
@@ -314,9 +314,23 @@ nmap <silent> <Esc><Esc> :nohl<CR>
 " ripgrep
 " function! LcdAndRg(path)
 "   let l:keyword = input('Enter keyword to search for ' . a:path . ': ')
-"   exec 'lcd' a:path '|' 'Rg' l:keyword
+"   execute 'lcd' a:path '|' 'Rg' l:keyword
 " endfunction
 " nnoremap <silent> <Space>pp :<C-u>call LcdAndRg('~/path/to/app')<CR>
+
+" format csv
+" function! FormatCsv()
+"   let l:sep = input('/')
+"   if l:sep =~# "\<Esc>" || l:sep =~# "\<C-c>" || len(l:sep) == 0
+"     return
+"   endif
+"   let l:vm = visualmode()
+"   if l:vm ==? 'line' || l:vm ==? 'V'
+"     silent execute line("'<") . ',' . line("'>") . 's/\(' . l:sep . '\)\@<=' . l:sep . '\|^' . l:sep . '/ ' . l:sep . '/g'
+"     silent execute line("'<") . ',' . line("'>") . "!column -t -s'" . l:sep . "'"
+"   endif
+" endfunction
+" vnoremap <silent> ,t :<C-u>call FormatCsv()<CR>
 
 " dbext
 " let g:dbext_default_history_file = expand(g:vim_state_dir . '/dbext_sql_history.txt')
