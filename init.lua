@@ -93,7 +93,7 @@ vim.opt.linespace = 1
 vim.api.nvim_command('highlight CursorLine cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE guisp=Gray50')
 
 -- encoding
-vim.opt.termencoding = 'UTF-8'
+-- vim.opt.termencoding = 'UTF-8'
 vim.opt.encoding = 'UTF-8'
 vim.opt.fileencoding = 'UTF-8'
 vim.opt.fileencodings = 'UTF-8,cp932'

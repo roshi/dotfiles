@@ -142,8 +142,9 @@ endfunction
 function! DBextMysqlDDL(...)
   return dbext#DB_execSql('show create table `' . DBextGetTableName() . '`')
 endfunction
+" nnoremap <silent> <Leader>sds :call DBextMysqlDDL()<CR>
 function! DBextPgsqlDDL(...)
-  let cmd = fnamemodify(g:dbext_default_PGSQL_bin, ':h') . '/pg_dump ' .
+  let cmd = 'pg_dump ' .
     \ dbext#DB_getWType("cmd_options") .
     \ DBextConcatOption(' -d', dbext#DB_getWTypeDefault("dbname"), ' ') .
     \ DBextConcatOption(' -U', dbext#DB_getWTypeDefault("user"), ' ') .
@@ -155,6 +156,31 @@ function! DBextPgsqlDDL(...)
   return dbext#DB_execFuncWCheck("runCmd", cmd, "", "")
 endfunction
 nnoremap <silent> <Leader>sds :call DBextPgsqlDDL()<CR>
+function! DBextPgsqlSchema(...)
+  let sql = "select" .
+    \ "  t.schemaname," .
+    \ "  (select description from pg_description where objoid = t.schemaname::regnamespace) schemacomment," .
+    \ "  t.relname," .
+    \ "  (select (regexp_split_to_array(description, E'\n'))[1] from pg_description where objoid = t.relid and objsubid = 0) relcomment," .
+    \ "  c.column_name colname," .
+    \ "  (regexp_split_to_array(d.description, E'\n'))[1] colcomment," .
+    \ "  c.data_type," .
+    \ "  c.character_octet_length," .
+    \ "  c.numeric_precision || ',' || c.numeric_scale numeric_length" .
+    \ " from" .
+    \ "  pg_stat_user_tables t" .
+    \ "  left join information_schema.columns c" .
+    \ "  on c.table_schema = t.schemaname and c.table_name = t.relname" .
+    \ "  left join pg_description d" .
+    \ "  on d.objoid = t.relid and d.objsubid = c.ordinal_position" .
+    \ " order by" .
+    \ "  t.schemaname," .
+    \ "  t.relname," .
+    \ "  c.ordinal_position"
+  return dbext#DB_execSql(sql)
+endfunction
+nnoremap <silent> <Leader>sls :call DBextPgsqlSchema()<CR>
+
 
 " status
 set laststatus=2
