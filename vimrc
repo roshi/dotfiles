@@ -1,3 +1,4 @@
+let g:vim_config_dir = expand('~/.config/vim')
 let g:vim_state_dir = expand('~/.local/state/vim')
 let g:vim_data_dir = expand('~/.local/share/vim')
 let vim_plug_dir = expand(g:vim_data_dir . '/plugged')
@@ -25,11 +26,10 @@ Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'prabirshrestha/vim-lsp'
-Plug 'hrsh7th/vim-vsnip'
-Plug 'hrsh7th/vim-vsnip-integ'
 Plug 'lambdalisue/fern.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'github/copilot.vim'
+Plug 'mattn/vim-sonictemplate'
 if exists('*g:LoadPlug')
   call g:LoadPlug()
 endif
@@ -363,5 +363,5 @@ nmap <silent> <Esc><Esc> :nohl<CR>
 " let g:dbext_default_profile_DBDEV = 'type=PGSQL:dbname=db-dev:host=localhost:user=postgres:passwd=password'
 " let g:dbext_default_profile = 'None'
 
-" vsnip
-" let g:vsnip_snippet_dir = '~/path/to/vsnip'
+" sonictemplate
+let g:sonictemplate_vim_template_dir = expand(g:vim_config_dir . '/template')
