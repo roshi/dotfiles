@@ -315,13 +315,10 @@ if executable('typescript-language-server')
       \   'cmd': {server_info->['typescript-language-server', '--stdio']},
       \   'root_uri': {server_info->lsp#utils#path_to_uri(
       \     lsp#utils#find_nearest_parent_file_directory(
-      \       lsp#utils#get_buffer_path(), ['tsconfig.json']
+      \       lsp#utils#get_buffer_path(), ['tsconfig.json', 'package.json']
       \     )
       \   )},
-      \   'initialization_options': {'diagnostics': 'true'},
       \   'allowlist': ['javascript','typescript', 'typescriptreact','javascript.jsx','typescript.tsx'],
-      \   'workspace_config': {},
-      \   'semantic_highlight': {},
       \ })
   augroup END
 endif

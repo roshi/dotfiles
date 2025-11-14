@@ -229,17 +229,22 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end
 })
 local lspconfig = require('lspconfig')
--- local capabilities = vim.lsp.protocol.make_client_capabilities()
--- capabilities.textDocument.completion.completionItem.snippetSupport = true
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 -- lsp:golang
-lspconfig.gopls.setup({})
+lspconfig.gopls.setup({
+  capabilities = capabilities
+})
 
 -- lsp:python
-lspconfig.pyright.setup({})
+lspconfig.pyright.setup({
+  capabilities = capabilities
+})
 
 -- lsp:typescript
-lspconfig.tsserver.setup({})
+lspconfig.ts_ls.setup({
+  capabilities = capabilities
+})
 
 -- lsp:flutter
 -- require('flutter-tools').setup({})
