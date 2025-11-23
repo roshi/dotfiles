@@ -28,7 +28,6 @@ require('lazy').setup({
   'hrsh7th/vim-vsnip',
 
   'github/copilot.vim',
-  -- {'akinsho/flutter-tools.nvim', lazy = false, dependencies = {'nvim-lua/plenary.nvim'}, config = true},
 })
 
 -- filetype
@@ -114,7 +113,6 @@ vim.keymap.set('n', '<Leader>R', ':<C-u>Quickrun sh<CR>', {noremap = true, silen
 vim.keymap.set('v', '<Leader>R', ":<C-u>'<,'>QuickRun sh<CR>", {noremap = true, silent = true})
 
 -- database
--- vim.g.dadbod_manage_dbext = 0
 vim.keymap.set('n', '<Leader>sbp', function()
   vim.ui.select(vim.tbl_keys(vim.g.dadbods or {}), {
     prompt = 'Select dbext profile',
@@ -153,8 +151,6 @@ local telescope = require('telescope')
 local tsactions = require('telescope.actions')
 telescope.setup({
   defaults = {
-    -- layout_strategy = 'vertical',
-    -- borderchars = {'─', '│', '─', '│', '┌', '┐', '┘', '└'},
     mappings = {
       i = {
         ['<C-d>'] = tsactions.delete_buffer,
@@ -214,7 +210,6 @@ cmp.setup({
 })
 
 -- lsp
--- vim.lsp.set_log_level(vim.log.levels.DEBUG)
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('UserLspConfig', {}),
   callback = function(ev)
@@ -245,11 +240,6 @@ lspconfig.pyright.setup({
 lspconfig.ts_ls.setup({
   capabilities = capabilities
 })
-
--- lsp:flutter
--- require('flutter-tools').setup({})
-
--- tweak diff colors
 
 -- keymap
 vim.keymap.set('n', '<Leader><Leader>', ':let @+ = expand("%:p")<CR>', {noremap = true, silent = true})

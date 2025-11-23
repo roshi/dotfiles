@@ -1,8 +1,8 @@
-#/bin/sh
+#!/bin/sh
 
-set -Ceux
+set -Ceu
 
-readonly BASE_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")" &> /dev/null && pwd | sed -e "s|$HOME|\~|")
+readonly BASE_DIR=$(cd -- "$(dirname -- "$0")" > /dev/null 2>&1 && pwd | sed -e "s|$HOME|\~|")
 
 exit_usage() {
   echo "usage: $0 [apply|unapply] [dest_dir]"
@@ -13,13 +13,16 @@ exit_usage() {
 extract_configure() {
   target=$1
   patch=$2
-  patched=$(if grep -q "${patch}" $target &> /dev/null; then echo 0; else echo 1; fi)
+  patched=$(if grep -q "${patch}" "$target" 2>/dev/null; then echo 0; else echo 1; fi)
 
-  if [ $SUB_CMD = "apply" ]; then
-    mkdir -p $(dirname -- $target) && touch $target
-    [ $patched -ne 0 ] && echo "${patch}" >> $target
-  elif [ $SUB_CMD = "unapply" ]; then
-    [ $patched -eq 0 ] && sed -i '' -e "\:${patch}:d" $target
+  if [ "$SUB_CMD" = "apply" ]; then
+    mkdir -p "$(dirname -- "$target")" && touch "$target"
+    [ $patched -ne 0 ] && echo "${patch}" >> "$target"
+  elif [ "$SUB_CMD" = "unapply" ]; then
+    if [ $patched -eq 0 ]; then
+      # Portable sed -i: create temp file and replace
+      sed -e "\:${patch}:d" "$target" > "$target.tmp" && mv "$target.tmp" "$target"
+    fi
   else
     exit_usage
   fi
@@ -39,7 +42,7 @@ config_tmux() {
 
 config_rcprofile() {
   for f in shrc profile; do
-    extract_configure ${DEST_DIR:-~}/$(if [[ -z "${DEST_DIR}" || $DEST_DIR = ~ ]]; then echo "."; fi)$f "source ${BASE_DIR}/${f}"
+    extract_configure ${DEST_DIR:-~}/$(if [ -z "${DEST_DIR}" ] || [ "$DEST_DIR" = "$HOME" ]; then echo "."; fi)$f "source ${BASE_DIR}/${f}"
   done
   return 0
 }

@@ -202,7 +202,6 @@ let g:ctrlp_switch_buffer = 'et'
 let g:ctrlp_max_files = 0
 let g:ctrlp_match_window = 'bottom,btt,min:1,max:10,results:100'
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
-" let g:ctrlp_mruf_exclude = '^\/'
 let g:ctrlp_prompt_mappings = {
   \   'PrtInsert()': ['<c-Bslash>', '<F3>'],
   \   'PrtHistory(-1)': [],
@@ -216,14 +215,12 @@ nnoremap <silent> [ctrlp]f :<C-u>CtrlPCurFile<CR>
 nnoremap <silent> [ctrlp]g :<C-u>CtrlPRoot<CR>
 nnoremap <silent> [ctrlp]m :<C-u>CtrlPMRU<CR>
 nnoremap <silent> [ctrlp]b :<C-u>CtrlPBuffer<CR>
-" nnoremap <silent> [ctrlp]G :<C-u>CtrlP ~/path/to/app<CR>
 
 " fern
 nnoremap <silent> [ctrlp]e :<C-u>Fern .<CR>
 
 " gitgutter
 if has('win32') || has('win64')
-  " let g:gitgutter_git_executable = 'git'
   let g:gitgutter_enabled = 0
 endif
 
@@ -233,11 +230,6 @@ let g:asyncomplete_smart_completion = 1
 let g:asyncomplete_auto_popup = 1
 
 " lsp
-" let g:lsp_preview_float = 1
-" let g:lsp_signature_help_enabled = 0
-" let g:lsp_diagnostics_enabled = 1
-" let g:lsp_log_verbose = 1
-" let g:lsp_log_file = expand(g:vim_state_dir . '/vim-lsp.log')
 let g:lsp_diagnostics_virtual_text_enabled = 1
 let g:lsp_diagnostics_virtual_text_align = 'right'
 let g:lsp_diagnostics_virtual_text_wrap = 'truncate'
@@ -260,7 +252,6 @@ function! s:on_lsp_buffer_enabled() abort
 
   let g:lsp_format_sync_timeout = 1000
 
-  nmap <buffer> gc <plug>(lsp-declaration)
   nmap <buffer> gn <plug>(lsp-document-diagnostics)
 endfunction
 augroup lsp_install
@@ -333,32 +324,6 @@ highlight DiffText   cterm=bold ctermfg=10 ctermbg=21
 nnoremap <silent> <Leader><Char-0x5c> :let @+ = expand("%:p")<CR>
 vnoremap * y/\V<C-R>=escape(@", '/\')<CR><CR>
 nmap <silent> <Esc><Esc> :nohl<CR>
-
-" ripgrep
-" function! LcdAndRg(path)
-"   let l:keyword = input('Enter keyword to search for ' . a:path . ': ')
-"   execute 'lcd' a:path '|' 'Rg' l:keyword
-" endfunction
-" nnoremap <silent> <Space>pp :<C-u>call LcdAndRg('~/path/to/app')<CR>
-
-" format csv
-" function! FormatCsv()
-"   let l:sep = input('/')
-"   if l:sep =~# "\<Esc>" || l:sep =~# "\<C-c>" || len(l:sep) == 0
-"     return
-"   endif
-"   let l:vm = visualmode()
-"   if l:vm ==? 'line' || l:vm ==? 'V'
-"     silent execute line("'<") . ',' . line("'>") . 's/\(' . l:sep . '\)\@<=' . l:sep . '\|^' . l:sep . '/ ' . l:sep . '/g'
-"     silent execute line("'<") . ',' . line("'>") . "!column -t -s'" . l:sep . "'"
-"   endif
-" endfunction
-" vnoremap <silent> ,t :<C-u>call FormatCsv()<CR>
-
-" dbext
-" let g:dbext_default_history_file = expand(g:vim_state_dir . '/dbext_sql_history.txt')
-" let g:dbext_default_profile_DBDEV = 'type=PGSQL:dbname=db-dev:host=localhost:user=postgres:passwd=password'
-" let g:dbext_default_profile = 'None'
 
 " sonictemplate
 let g:sonictemplate_vim_template_dir = expand(g:vim_config_dir . '/template')

@@ -6,6 +6,7 @@ export XDG_DATA_HOME=~/.local/share
 export XDG_STATE_HOME=~/.local/state
 
 export GOPATH=${XDG_DATA_HOME}/go
+export PATH="$GOPATH/bin:$PATH"
 export INPUTRC=${XDG_CONFIG_HOME}/readline/inputrc
 export LESSHISTFILE=-
 export VIMINIT='let $MYVIMRC = has("nvim") ? "$XDG_CONFIG_HOME/nvim/init.lua" : "$XDG_CONFIG_HOME/vim/vimrc" | source $MYVIMRC'
