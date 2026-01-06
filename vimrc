@@ -28,7 +28,7 @@ Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'lambdalisue/fern.vim'
 Plug 'airblade/vim-gitgutter'
-Plug 'github/copilot.vim'
+" Plug 'github/copilot.vim'
 Plug 'mattn/vim-sonictemplate'
 if exists('*g:LoadPlug')
   call g:LoadPlug()
@@ -181,7 +181,6 @@ function! DBextPgsqlSchema(...)
 endfunction
 nnoremap <silent> <Leader>sls :call DBextPgsqlSchema()<CR>
 
-
 " status
 set laststatus=2
 let g:lightline = {
@@ -248,20 +247,18 @@ function! s:on_lsp_buffer_enabled() abort
   setlocal signcolumn=yes
   if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
   nmap <buffer> gd <plug>(lsp-definition)
-  nmap <buffer> gc <plug>(lsp-declaration)
-  nmap <buffer> gs <plug>(lsp-document-symbol-search)
+  nmap <buffer> gD <plug>(lsp-declaration)
+  nmap <buffer> gG <plug>(lsp-document-diagnostics)
+  nmap <buffer> gL <plug>(lsp-document-symbol-search)
   nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
-  nmap <buffer> gr <plug>(lsp-reference)
-  nmap <buffer> gi <plug>(lsp-implementation)
-  nmap <buffer> gy <plug>(lsp-type-definition)
+  nmap <buffer> gZ <plug>(lsp-reference)
+  nmap <buffer> gX <plug>(lsp-implementation)
+  nmap <buffer> gY <plug>(lsp-type-definition)
   nmap <buffer> [g <plug>(lsp-previous-diagnostic)
   nmap <buffer> ]g <plug>(lsp-next-diagnostic)
   nmap <buffer> K <plug>(lsp-hover)
 
   let g:lsp_format_sync_timeout = 1000
-
-  nmap <buffer> gc <plug>(lsp-declaration)
-  nmap <buffer> gn <plug>(lsp-document-diagnostics)
 endfunction
 augroup lsp_install
   au!
@@ -334,6 +331,9 @@ nnoremap <silent> <Leader><Char-0x5c> :let @+ = expand("%:p")<CR>
 vnoremap * y/\V<C-R>=escape(@", '/\')<CR><CR>
 nmap <silent> <Esc><Esc> :nohl<CR>
 
+" sonictemplate
+let g:sonictemplate_vim_template_dir = expand(g:vim_config_dir . '/template')
+
 " ripgrep
 " function! LcdAndRg(path)
 "   let l:keyword = input('Enter keyword to search for ' . a:path . ': ')
@@ -359,6 +359,3 @@ nmap <silent> <Esc><Esc> :nohl<CR>
 " let g:dbext_default_history_file = expand(g:vim_state_dir . '/dbext_sql_history.txt')
 " let g:dbext_default_profile_DBDEV = 'type=PGSQL:dbname=db-dev:host=localhost:user=postgres:passwd=password'
 " let g:dbext_default_profile = 'None'
-
-" sonictemplate
-let g:sonictemplate_vim_template_dir = expand(g:vim_config_dir . '/template')

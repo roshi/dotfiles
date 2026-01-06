@@ -1,7 +1,11 @@
 # load each new shell process
 [ -z "$PS1" ] && return
 
-PS1="%c %# "
+if [ -n "${ZSH_VERSION:-}" ]; then
+  PS1="%F{15}%m%f:%F{15}%~%f %# "
+elif [ -n "${BASH:-}" ]; then
+  PS1="\e[15m\h\e[0m:\e[15m\w\e[0m \$ "
+fi
 
 alias ll='ls -al'
 alias dps='docker ps'
