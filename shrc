@@ -1,14 +1,15 @@
 # load each new shell process
 [ -z "$PS1" ] && return
 
+HC=$([ -n "$SSH_TTY" ] && echo "10" || echo "15")
+PC=$([ -n "$SSH_TTY" ] && echo "13" || echo "15")
+
 if [ -n "${ZSH_VERSION:-}" ]; then
-  PS1="%F{15}%m%f:%F{15}%~%f %# "
+  PS1="%F{${HC}}%m%f:%F{${PC}}%c%f %# "
 elif [ -n "${BASH:-}" ]; then
   PS1="\e[15m\h\e[0m:\e[15m\w\e[0m \$ "
 fi
 
-alias ll='ls -al'
-alias dps='docker ps'
 alias dprm='docker ps -qa | xargs docker rm -f'
 alias dvrm='docker ps -qa | xargs docker rm -f && docker volume ls -q | xargs docker volume rm -f'
 alias dirm='docker ps -qa | xargs docker rm -f && docker volume ls -q | xargs docker volume rm -f && docker images -qa | xargs docker rmi -f'
