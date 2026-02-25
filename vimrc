@@ -39,7 +39,7 @@ source $VIMRUNTIME/macros/matchit.vim
 
 
 " filetype
-au FileType sql set softtabstop=2 | set shiftwidth=2 | set expandtab
+au FileTYpe sql,javascript,typescript,typescriptreact,javascript.jsx,typescript.tsx set expandtab shiftwidth=2 softtabstop=2
 au FileType help,qf,quickrun nnoremap <buffer> q :<C-u>q<CR>
 
 " dracula
@@ -94,6 +94,7 @@ set display=uhex
 set foldlevel=99
 set splitbelow
 set cursorline
+set colorcolumn=120
 highlight CursorLine cterm=underline ctermfg=NONE ctermbg=NONE
 
 " encoding
