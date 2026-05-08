@@ -39,8 +39,14 @@ source $VIMRUNTIME/macros/matchit.vim
 
 
 " filetype
-au FileTYpe sql,javascript,typescript,typescriptreact,javascript.jsx,typescript.tsx set expandtab shiftwidth=2 softtabstop=2
-au FileType help,qf,quickrun nnoremap <buffer> q :<C-u>q<CR>
+augroup escape
+  autocmd!
+  autocmd FileType help,qf,quickrun nnoremap <buffer> q :<C-u>q<CR>
+augroup END
+augroup indent2
+  autocmd!
+  autocmd FileType sql,javascript,typescript,typescriptreact,javascriptreact setlocal ts=2 sts=2 sw=2 et
+augroup END
 
 " dracula
 let g:dracula_italic = 0
@@ -282,22 +288,34 @@ endif
 
 " lsp:python
 " python3 -m pip install python-lsp-server python-lsp-black pylsp-mypy pyls-isort pyls-flake8 pyproject-flake8
-if executable('pylsp')
-  augroup pylsp
+" if executable('pylsp')
+"   augroup pylsp
+"     autocmd!
+"     autocmd User lsp_setup call lsp#register_server({
+"       \   'name': 'pylsp',
+"       \   'cmd': {server_info->['pylsp']},
+"       \   'allowlist': ['python'],
+"       \   'workspace_config': {'pylsp': {
+"       \     'configurationSources': ['flake8'],
+"       \     'plugins': {
+"       \       'pycodestyle': {'enabled': v:true},
+"       \       'black': {'enabled': v:true},
+"       \       'flake8': {'enabled': v:true},
+"       \       'pylsp_mypy': {'enabled': v:true}
+"       \     }
+"       \   }}
+"       \ })
+"     autocmd BufWritePre *.py LspDocumentFormatSync
+"   augroup END
+" endif
+" python3 -m pip install pyright
+if executable('pyright-langserver')
+  augroup pyright_lsp
     autocmd!
     autocmd User lsp_setup call lsp#register_server({
-      \   'name': 'pylsp',
-      \   'cmd': {server_info->['pylsp']},
+      \   'name': 'pyright-langserver',
+      \   'cmd': {server_info->['pyright-langserver', '--stdio']},
       \   'allowlist': ['python'],
-      \   'workspace_config': {'pylsp': {
-      \     'configurationSources': ['flake8'],
-      \     'plugins': {
-      \       'pycodestyle': {'enabled': v:true},
-      \       'black': {'enabled': v:true},
-      \       'flake8': {'enabled': v:true},
-      \       'pylsp_mypy': {'enabled': v:true}
-      \     }
-      \   }}
       \ })
     autocmd BufWritePre *.py LspDocumentFormatSync
   augroup END
@@ -338,9 +356,15 @@ let g:sonictemplate_vim_template_dir = expand(g:vim_config_dir . '/template')
 " ripgrep
 " function! LcdAndRg(path)
 "   let l:keyword = input('Enter keyword to search for ' . a:path . ': ')
-"   execute 'lcd' a:path '|' 'Rg' l:keyword
+"   execute 'lcd' a:path
+"   if !empty(l:keyword)
+"     execute 'Rg' l:keyword
+"   else
+"     redraw
+"     pwd
+"     1sleep
+"   endif
 " endfunction
-" nnoremap <silent> <Space>pp :<C-u>call LcdAndRg('~/path/to/app')<CR>
 
 " format csv
 " function! FormatCsv()

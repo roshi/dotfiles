@@ -6,9 +6,9 @@ PC=69
 BC=244
 
 if [ -n "${ZSH_VERSION:-}" ]; then
-  PS1="%F{${HC}}%m%f %F{${PC}}%~%f"$'\n'"%# "
+  PS1=$'\n'"%F{${HC}}%m%f %F{${PC}}%~%f"$'\n'"%# "
 elif [ -n "${BASH_VERSION:-}" ]; then
-  PS1="\[\e[38;5;${HC}m\]\h\[\e[0m\] \[\e[38;5;${PC}m\]\w\[\e[0m\] \[\e[38;5;${BC}m\]${GB}\[\e[0m\]"$'\n'"\$ "
+  PS1=$'\n'"\[\e[38;5;${HC}m\]\h\[\e[0m\] \[\e[38;5;${PC}m\]\w\[\e[0m\] \[\e[38;5;${BC}m\]${GB}\[\e[0m\]"$'\n'"\$ "
 fi
 
 alias dprm='docker ps -qa | xargs docker rm -f'
