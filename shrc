@@ -1,13 +1,14 @@
 # load each new shell process
 [ -z "$PS1" ] && return
 
-HC=$([ -n "$SSH_TTY" ] && echo "32" || echo "15")
-PC=$([ -n "$SSH_TTY" ] && echo "34" || echo "15")
+HC=123
+PC=69
+BC=244
 
 if [ -n "${ZSH_VERSION:-}" ]; then
-  PS1="%F{${HC}}%m%f:%F{${PC}}%c%f %# "
+  PS1="%F{${HC}}%m%f %F{${PC}}%~%f"$'\n'"%# "
 elif [ -n "${BASH_VERSION:-}" ]; then
-  PS1="\[\e[33;1;${HC}m\]\h\[\e[0m\]:\[\e[33;1;${PC}m\]\w\[\e[0m\] \$ "
+  PS1="\[\e[38;5;${HC}m\]\h\[\e[0m\] \[\e[38;5;${PC}m\]\w\[\e[0m\] \[\e[38;5;${BC}m\]${GB}\[\e[0m\]"$'\n'"\$ "
 fi
 
 alias dprm='docker ps -qa | xargs docker rm -f'
