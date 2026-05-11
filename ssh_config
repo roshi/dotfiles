@@ -1,0 +1,23 @@
+Include ~/.ssh/ssh_internal
+Include ~/.ssh/ssh_external
+
+Host *
+	AddKeysToAgent yes
+	ForwardAgent no
+	IdentitiesOnly yes
+	UseKeychain no
+	Port 22
+
+# ~/.ssh/ssh_internal
+# Host internal
+# 	HostName internal.example.com
+# 	User internal
+# 	ForwardAgent yes
+# 	IdentityFile ~/.ssh/id_internal
+
+# ~/.ssh/ssh_external
+# Host external
+# 	HostName external.example.com
+# 	User external
+# 	UseKeychain yes
+# 	IdentityFile ~/.ssh/id_external

@@ -15,4 +15,50 @@ alias dprm='docker ps -qa | xargs docker rm -f'
 alias dvrm='docker ps -qa | xargs docker rm -f && docker volume ls -q | xargs docker volume rm -f'
 alias dirm='(docker ps -qa | xargs docker rm -f) && (docker volume ls -q | xargs docker volume rm -f) && (docker images -qa | xargs docker rmi -f)'
 
+# source "$(cd "$(dirname $(realpath "${BASH_SOURCE[0]:-${(%):-%x}}"))" && pwd)/base/shrc"
+# 
+# if [ -n "${ZSH_VERSION:-}" ]; then
+#   eval "$(mise activate zsh)"
+# 
+#   BREW_PREFIX=$(brew --prefix)
+#   
+#   fpath=($BREW_PREFIX/share/zsh/site-functions $fpath)
+#   autoload -Uz compinit && compinit
+#   autoload -Uz colors && colors
+# 
+#   source ${^fpath}/key-bindings.zsh(N)
+#   _skim_comprun() {
+#     local command=$1
+#     shift
+# 
+#     local candidates
+#     case "${command}" in
+#     git)
+#       local subcommand="${${BUFFER##git }%% *}"
+#       case "${subcommand}" in
+#       switch|checkout|branch|merge|rebase)
+#         candidates=$(git branch 2> /dev/null | sed 's/^[* +]//')
+#         ;;
+#       add|diff|restore)
+#         candidates=$(git status --short 2> /dev/null | awk '{print $2}')
+#         ;;
+#       esac
+#       ;;
+#     esac
+# 
+#     if [[ -n "$candidates" ]]; then
+#       echo "${candidates}" | sk "$@"
+#     else
+#       sk "$@"
+#     fi
+#   }
+# 
+#   source $BREW_PREFIX/etc/bash_completion.d/git-prompt.sh
+#   GB=$(type __git_ps1 &> /dev/null && echo '$(__git_ps1 "%s")' || echo "")
+#   setopt PROMPT_SUBST
+#   PS1="${PS1:0:-4} %F{${BC}}${GB}%f ${PS1: -4}"
+# elif [ -n "${BASH_VERSION:-}" ]; then
+#   :
+# fi
+
 #vim: set ft=sh
